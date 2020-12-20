@@ -1,0 +1,38 @@
+/* Click to copy */
+.fluency-admin-view .fluency-copy-trigger-container {
+  position: relative;
+}
+  .fluency-admin-view .fluency-copy-trigger-container:before {
+    align-items: center;
+    background-color: rgba(62, 185, 152, .7);
+    color: rgb(255, 255, 255);
+    content: 'Click to copy';
+    cursor: pointer;
+    display: flex;
+    font-size: 18px;
+    font-weight: 800;
+    height: 100%;
+    justify-content: center;
+    opacity: 0;
+    position: absolute;
+    transition: opacity .5s, background-color .3s;
+      left: 0;
+      top: 0;
+    width: 100%;
+    z-index: 5;
+  }
+
+  .fluency-admin-view .fluency-copy-trigger-container:hover:before {
+    opacity: 1;
+  }
+
+  .fluency-admin-view .fluency-copy-trigger-container.copied:before {
+    background-color: rgba(62, 185, 152, .9);
+    content: 'Copied!';
+  }
+
+/* Errors */
+.fluency-admin-view .InputfieldHeader,
+.fluency-admin-view .InputfieldContent {
+  transition: color .3s, background .3s, background-color .3s;
+}

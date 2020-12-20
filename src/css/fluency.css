@@ -1,0 +1,147 @@
+/* Fixes an issue where the notes did not have vertical spacing with multi-language  */
+.Inputfields .langTabsContainer .notes,
+.Inputfields .langTabsContainer .pw-notes {
+  margin-top: 15px;
+}
+
+li.Inputfield { position: relative; }
+
+  /* Begin translate link trigger */
+  .fluency-translate-trigger-container { margin-top: .75rem; }
+
+    .fluency-translate-trigger,
+    .fluency-translate-notifier { font-size: .9rem; }
+
+    /* This exists solely to preserve the vertical spacing when switching tabs */
+    .fluency-translate-notifier {
+      color: #999;
+      font-style: italic;
+      pointer-events: none;
+      user-select: none;
+    }
+  /* end translate link trigger */
+
+/* Page name input styles */
+#ProcessPageEditSettings .InputfieldPageName .LanguageSupport {
+  padding: 10px;
+}
+/* End page name input styles */
+
+/*
+  Begin animated overlays
+  - Overlays consist of a div element appended to a field/fieldset which is
+    shown during a given operation. The animation is consistent with the
+    name of the operation translated into 9 languages that rapidly cycle
+    during the process to illustrate the multi-language capabilities as a design
+    flare.
+*/
+
+/*
+  Allows the overlay to be contained with position: absolute to it's
+  respective container
+*/
+.fluency-overlay-container { position: relative; }
+
+@keyframes background-gradient {
+    0% { background-position: 100% 0; }
+    100% { background-position:-100% 0; }
+}
+
+  .fluency-activity-overlay {
+    animation: background-gradient 1.5s linear infinite;
+    align-items: center;
+    background: linear-gradient(
+                  90deg,
+                  rgba(62, 185, 152, .85),
+                  rgba(67, 204, 168, .85),
+                  rgba(62, 185, 152, .85),
+                  rgba(67, 204, 168, .85),
+                  rgba(62, 185, 152, .85)
+                );
+    background-size: 200% 100%;
+    outline: 1px solid rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    display: flex;
+    font-size: 1.3rem;
+    height: 100%;
+    justify-content: center;
+    letter-spacing: 2px;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+      left: 0;
+      top: 0;
+    transition: opacity .2s;
+    width: 100%;
+    z-index: 10;
+  }
+
+    /* Revisit when error reporting is added. */
+    .fluency-activity-overlay .fluency-overlay-message {
+      opacity: 0;
+      transition: opacity .5s;
+      display: none;
+    }
+
+    .fluency-activity-overlay.active {
+      opacity: 1;
+      pointer-events: initial;
+    }
+
+    .fluency-activity-overlay .fluency-overlay-animation-item {
+      opacity: 0;
+      position: absolute;
+      user-select: none;
+    }
+
+    @keyframes text-rotation {
+      0% { opacity: 0; }
+      1% { opacity: 0; transform: translateY(-25px); }
+      3.5% { opacity: 1; transform: translateY(0px); }
+      11% { opacity: 1; transform: translateY(0px); }
+      12.5% { opacity: 0; transform: translateY(25px); }
+      20% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    .fluency-activity-overlay.active .fluency-overlay-animation-item {
+      animation: text-rotation 4.05s ease-in-out infinite 0s;
+    }
+
+    .fluency-activity-overlay .fluency-overlay-animation-item:nth-of-type(2) {
+      animation-delay: .45s;
+    }
+
+
+    .fluency-activity-overlay .fluency-overlay-animation-item:nth-of-type(3) {
+      animation-delay: .9s;
+    }
+
+    .fluency-activity-overlay .fluency-overlay-animation-item:nth-of-type(4) {
+      animation-delay: 1.35s;
+    }
+
+
+    .fluency-activity-overlay .fluency-overlay-animation-item:nth-of-type(5) {
+      animation-delay: 1.8s;
+    }
+
+    .fluency-activity-overlay .fluency-overlay-animation-item:nth-of-type(6) {
+      animation-delay: 2.25s;
+    }
+
+
+    .fluency-activity-overlay .fluency-overlay-animation-item:nth-of-type(7) {
+      animation-delay: 2.7s;
+    }
+
+
+    .fluency-activity-overlay .fluency-overlay-animation-item:nth-of-type(8) {
+      animation-delay: 3.15s;
+    }
+
+
+    .fluency-activity-overlay .fluency-overlay-animation-item:nth-of-type(9) {
+      animation-delay: 3.6s;
+    }
+/* End animated translation overlay */
