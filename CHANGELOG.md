@@ -36,7 +36,7 @@
   them ignored and always remain in the original langauge.
 - Refactored API key validity storage. Module checks and stores whether API key
   is valid
-- Updated README.md with known Grammarly plugin conflict [Gitlab Issue](https://gitlab.com/SkyLundy/fluency-processwire/-/issues/21)
+- Updated README.md with known Grammarly plugin conflict
 
 ## 0.2.0 2020-11-06
 ### Alpha version change, Critical update, Upgrade recommended
@@ -53,8 +53,6 @@ error. Also significant updates to the UI. All users should update.
 - Updated README to reflect availability of translator tool under instructions
 - Module no longer initializes if on login screen
 - Added license
-- Bugfix: [https://gitlab.com/SkyLundy/fluency-processwire/-/issues/8](https://gitlab.com/SkyLundy/fluency-processwire/-/issues/8)
-
 
 ## 0.1.1 2020-11-04
 ### Minor version, Upgrade recommended

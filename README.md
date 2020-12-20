@@ -3,7 +3,7 @@ Fluency is a module that brings DeepL's powerful AI deep learning translation en
 
 Fluency can be added to new websites in development, existing websites adding multi-language abilities, or to websites that already have multi-language capabilities where it is desireable to have high quality translation built in.
 
-**Please note, this is an alpha release.** Please use in production after thorough testing for your own project and create Gitlab issues for bugs found if possible.
+**Please note, this is an alpha release.** Please use in production after thorough testing for your own project and create Github issues for bugs found if possible.
 
 ## What is DeepL?
 DeepL is an advanced language translation engine that provides industry-leading results when compared to other automated solutions. It handily beats the quality and accuracy of offerings from companies like Facebook, Google, and Microsoft. DeepL has been praised for it's ability to reproduce language translations that read like native speech.
