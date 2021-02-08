@@ -239,25 +239,27 @@ Fluency.MultilanguageFields = (function() {
         // Get the associated field
         sourceInputContainer = targetInputContainer.parentElement
                                                    .querySelector(langIdSelector),
-        sourceIframe = sourceInputContainer.querySelector('iframe'),
-        targetIframe = targetInputContainer.querySelector('iframe'),
         sourceInput = sourceInputContainer.querySelector('input, textarea'),
-        targetInput = targetInputContainer.querySelector('input, textarea')
+        targetInput = targetInputContainer.querySelector('input, textarea'),
+        sourceCkeditor = null,
+        targetCkeditor = null
 
     // Bind a click event to translate
     targetInputTrigger.addEventListener('click', function(e) {
       e.preventDefault()
-      // Get the source language from the id on the trigger link element
+
       var contentToTranslate = null,
           overlay = targetInputContainer.closest('li')
                                         .querySelector('.fluency-activity-overlay')
 
-      // If there's a source iframe present, we need that content
-      // Otherwise get the content from the sourceInput
-      if (sourceIframe) {
-        contentToTranslate = sourceIframe.contentDocument
-                                         .querySelector('body')
-                                         .innerHTML
+      // If CKEDITOR exists and an instance exists for the target input
+      // then use CKEDITOR to populate the data
+      if (CKEDITOR != undefined && CKEDITOR.instances[targetInput.id]){
+        // Get the source field ID from the target field ID by removing
+        // the target input ID from the end
+        sourceCkeditor = CKEDITOR.instances[targetInput.id.split('__')[0]]
+        targetCkeditor = CKEDITOR.instances[targetInput.id]
+        contentToTranslate = sourceCkeditor.document.getBody().getHtml()
       } else {
         contentToTranslate = sourceInput.value
       }
@@ -276,10 +278,9 @@ Fluency.MultilanguageFields = (function() {
         // Target input is updated
         Fluency.Tools.updateInputValue(targetInput, translatedText)
 
-        // Check if this field is a CKEditor field with an iframe that handles
-        // content
-        if (targetIframe) {
-          targetIframe.contentDocument.body.innerHTML = translatedText
+        // CKEditor is updated if present
+        if (targetCkeditor) {
+          targetCkeditor.setData(translatedText)
         }
 
         Fluency.Tools.hideActivityOverlay(overlay)

@@ -1,5 +1,14 @@
 # Fluency for ProcessWire Changelog
 
+## 0.2.4 2021-02-08
+### Alpha version change, upgrade recommended for all users
+- Updated js that handles CKEditor field translation and population. Fixes an issue
+  where some fields may not received translated content and other fields may not
+  allow for translating content until the page/fields are saved at least once.
+- Learned that a space before end of sentence punctuation is a thing in French
+  and troubleshooting the module after first noticing that was a waste of time.
+  Not relative to module update, just complaining.
+
 ## 0.2.3 2020-12-19
 ### Alpha version change, *Critical upate*, upgrade recommended for all users
 - Critical update to AJAX calls. Previously, calls to the module were made using

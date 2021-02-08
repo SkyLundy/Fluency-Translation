@@ -36,7 +36,6 @@ Fluency.Tools = (function() {
       if ({}.hasOwnProperty.call(requestData, item)) {
         var dataValue = requestData[item],
             cleanData = dataValue.replace(/(\r\n|\n|\r)/gm,"")
-
         params.push(item + '=' + encodeURIComponent(cleanData))
       }
     }

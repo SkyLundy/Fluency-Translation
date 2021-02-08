@@ -138,7 +138,6 @@ Fluency.LanguageTranslatorPage = (function() {
         targetLanguage: targetLanguage.deeplCode,
         content: content
       }, function(err, response) {
-        console.log(response)
         var translatedText = response.data.translations[0].text
 
         targetInput.value = translatedText
