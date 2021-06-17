@@ -1,5 +1,9 @@
 # Fluency for ProcessWire Changelog
 
+## 0.2.5 2021-07-16
+### Alpha version change. *Critical update*, update recommended for all users.
+- Fixed issue where non-CKEditors/plain text fields would not reliably translate. Github issue #2 https://github.com/SkyLundy/Fluency-Translation/issues/2
+
 ## 0.2.4 2021-02-08
 ### Alpha version change, upgrade recommended for all users
 - Updated js that handles CKEditor field translation and population. Fixes an issue

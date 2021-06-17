@@ -254,13 +254,23 @@ Fluency.MultilanguageFields = (function() {
 
       // If CKEDITOR exists and an instance exists for the target input
       // then use CKEDITOR to populate the data
-      if (CKEDITOR != undefined && CKEDITOR.instances[targetInput.id]){
-        // Get the source field ID from the target field ID by removing
-        // the target input ID from the end
-        sourceCkeditor = CKEDITOR.instances[targetInput.id.split('__')[0]]
-        targetCkeditor = CKEDITOR.instances[targetInput.id]
-        contentToTranslate = sourceCkeditor.document.getBody().getHtml()
-      } else {
+      try {
+        if (CKEDITOR != undefined && CKEDITOR.instances[targetInput.id]){
+          // Get the source field ID from the target field ID by removing
+          // the target input ID from the end
+          sourceCkeditor = CKEDITOR.instances[targetInput.id.split('__')[0]]
+          targetCkeditor = CKEDITOR.instances[targetInput.id]
+          contentToTranslate = sourceCkeditor.document.getBody().getHtml()
+        }
+      } catch (e){
+        console.log('No CKEditor found by Fluency')
+      }
+
+      if (contentToTranslate === null){
+        contentToTranslate = sourceInput.value
+      }
+
+      if (contentToTranslate === null){
         contentToTranslate = sourceInput.value
       }
 
