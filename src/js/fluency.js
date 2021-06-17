@@ -270,10 +270,6 @@ Fluency.MultilanguageFields = (function() {
         contentToTranslate = sourceInput.value
       }
 
-      if (contentToTranslate === null){
-        contentToTranslate = sourceInput.value
-      }
-
       Fluency.Tools.showActivityOverlay(overlay)
 
       // Set ajax call, get value, insert into destination field
