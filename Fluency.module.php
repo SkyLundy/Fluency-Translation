@@ -3,7 +3,7 @@
 // FileCompiler=0
 
 require_once 'classes/FluencyTools.class.php';
-require_once 'classes/DeepL.class.php';
+require_once 'engines/DeepL.class.php';
 /**
  * Master module class for Fluency
  */
@@ -37,7 +37,8 @@ class Fluency extends Process implements Module {
     $this->fluencyTools = new FluencyTools;
 
     $this->deepL = new DeepL([
-      'apiKey' => $this->deepl_api_key
+      'apiKey' => $this->deepl_api_key,
+      'accountType' => $this->deepl_account_type
     ]);
 
     if (!$this->moduleShouldInit()) return false;
@@ -58,7 +59,8 @@ class Fluency extends Process implements Module {
     return $this->page->name !== 'login' &&
            $this->deepl_api_key &&
            wire('user')->hasPermission('fluency-translate') &&
-           (isset($moduleConfig['api_key_valid']) && $moduleConfig['api_key_valid'] === true);
+           (isset($moduleConfig['api_key_valid']) && $moduleConfig['api_key_valid'] === true) &&
+           (isset($moduleConfig['deepl_account_type']));
   }
 
   /**

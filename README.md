@@ -26,14 +26,17 @@ Best of all, you don't have to modify the way you build out your ProcessWire sit
 ## Cost
 Fluency is free to use. There is no cost for this module and it can be used on any site that you build with ProcessWire.
 
-The only cost involved is a subscription to the DeepL Pro service which provides API access to their translation services. [Click here to find out more here](https://www.deepl.com/pro#developer)
+## DeepL Account
+To use Fluency you must have a Developer account with DeepL. The Developer account provides access to their REST API which is used to power Fluency. DeepL has two account types which are Free and Pro and both can be used with Fluency.
+
+To learn more about DeepL Developer accounts and sign up, [click here to find out more](https://www.deepl.com/pro#developer).
 
 ## Instructions
 1. Download and unzip the contents into /site/modules
 2. Install the module in the developer admin
-3. Open the module configuration page and [add your DeepL Pro API key](https://www.deepl.com/pro#developer), then save
+3. Open the module configuration page, select your account type, enter your DeepL API key, then save
 4. Set Preserve Formatting choice
-5. Scroll down to the list of the languages that are configured in your ProcessWire installation and select the DeepL language that matches, then save
+5. Scroll down to the list of the languages that are configured in your ProcessWire installation and select the DeepL language you would like to associate with them, then save
 
 That's it! All multi-language fields should now have click to translate buttons and a translator tool is available in the Admin menu bar.
 
@@ -52,7 +55,7 @@ $fluency->translate(
 ```
 
 ### Using the Fluency module
-This requires that your current user has the `fluency-translate` permission. This will use the API key from the ProcessWire configuration screen as well as the global ignored strings, preserve formatting, etc. It does not reference configured languages as those are defined manually when translating so all are available when.
+This requires that your current user has the `fluency-translate` permission. This will use the API key from the ProcessWire configuration screen as well as the global ignored strings, preserve formatting, etc. It does not reference configured languages as those are defined manually when translating so all are available when using the module directly.
 
 ```php
 $fluency = $modules->get('Fluency');
@@ -72,7 +75,10 @@ This does not use any configurations in the ProcessWire configuration screen and
 // Namespaced under ProcessWire
 use DeepL;
 
-$deepl = new DeepL(['apiKey' => 'your-deepl-api-key-here']);
+$deepl = new DeepL([
+  'apiKey' => 'your-deepl-api-key-here'
+  'accountType' => 'pro' // Options are 'pro' and 'free'
+]);
 
 // Here is an extended example
 $result = $deepl->translate(

@@ -10,6 +10,31 @@
  *   - 30kb is ~5000 words, or 30,000 characters
  */
 class DeepL {
+
+  /**
+   * Name of tag that will be used to prevent translation of selected strings
+   * @var string
+   */
+  private const IGNORED_TAG_NAME = 'fluency-ignore';
+
+  /**
+   * Base URL for the pro DeepL API
+   * @var string
+   */
+  private const URL_BASE_PRO = 'https://api.deepl.com/v2';
+
+  /**
+   * Base URL for the free DeepL API
+   * @var string
+   */
+  private const URL_BASE_FREE = 'https://api-free.deepl.com/v2';
+
+  /**
+   * Name of error log
+   * @var string
+   */
+  private const ERROR_LOG = 'deeplwire-api';
+
   /**
    * The DeepL API key
    * @var string
@@ -17,40 +42,60 @@ class DeepL {
   private $apiKey;
 
   /**
-   * Name of tag that will be used to prevent translation of selected strings
+   * The appropriate DeepL API URL for the provided account type
    * @var string
    */
-  private $ignoredTagName = 'fluency-ignore';
+  private $apiUrl;
 
   /**
-   * Name of error log
+   * The DeepL account type. 'free' or 'pro'
    * @var string
    */
-  private $errorLog = 'deeplwire-api';
+  private $accountType;
 
   public function __construct(array $configs) {
     $this->apiKey = $configs['apiKey'];
+    $this->setApiUrl($configs['accountType']);
+  }
+
+  /**
+   * Sets the appropriate API URL determined by the provided account type
+   * @param string $accountType Type of account, either 'free' or 'pro'
+   */
+  private function setApiUrl(string $accountType): void {
+    switch ($accountType) {
+      case 'pro':
+        $this->apiUrl = self::URL_BASE_PRO;
+        break;
+      case 'free':
+        $this->apiUrl = self::URL_BASE_FREE;
+        break;
+      default:
+        $this->apiUrl = self::URL_BASE_FREE;
+        break;
+    }
   }
 
   /**
    * A list of error codes and corresponding messages. These are user friendly.
    * https://www.deepl.com/docs-api/accessing-the-api/error-handling/
    * These need to be moved to the localization class for self-translation
-   * @var array
+   * @var    int    HTTP code
+   * @return string HTTP message
    */
-  public function getHttpMessage(int $code) {
+  public function getHttpMessage(int $code): string {
     $message = null;
 
     $messages = [
-      200 => 'HTTP/101 200 OK',
-      400 => 'HTTP/101 400 Bad request. Please check error message and your parameters.',
-      403 => "HTTP/101 403 The DeepL API key in use is invalid or the associated account is not current.",
-      404 => "HTTP/101 404 The requested resource could not be found.",
-      413 => "HTTP/101 413 The amount of content is too large to translate.",
-      429 => "HTTP/101 429 Too many requests. Please wait and try again in a few moments.",
-      456 => "HTTP/101 456 The DeepL translation character limit for this billing period has been reached. Please review your DeepL account for more information.",
-      503 => "HTTP/101 503 There was an error communicating with the translation service, please try again later.",
-      500 => "HTTP/101 500 The translation service may be experiencing errors or is undergoing maintenance. Please try again later"
+      200 => 'HTTP/1.0 200 OK',
+      400 => 'HTTP/1.0 400 Bad request. Please check error message and your parameters.',
+      403 => "HTTP/1.0 403 The DeepL API key in use is invalid or the associated account is not current.",
+      404 => "HTTP/1.0 404 The requested resource could not be found.",
+      413 => "HTTP/1.0 413 The amount of content is too large to translate.",
+      429 => "HTTP/1.0 429 Too many requests. Please wait and try again in a few moments.",
+      456 => "HTTP/1.0 456 The DeepL translation character limit for this billing period has been reached. Please review your DeepL account for more information.",
+      503 => "HTTP/1.0 503 There was an error communicating with the translation service, please try again later.",
+      500 => "HTTP/1.0 500 The translation service may be experiencing errors or is undergoing maintenance. Please try again later"
     ];
 
     if (isset($messages[$code])) {
@@ -69,7 +114,7 @@ class DeepL {
    * @return string           JSON API return value
    */
   private function apiCall(string $endpoint, array $params = []) {
-    $reqUrl = "https://api.deepl.com/v2{$endpoint}?auth_key={$this->apiKey}";
+    $reqUrl = "{$this->apiUrl}{$endpoint}?auth_key={$this->apiKey}";
     $paramString = '';
     $output = [];
 
@@ -82,7 +127,7 @@ class DeepL {
       }
 
       // Set the ignored_tags parameter for translation
-      $paramString .= "&ignore_tags={$this->ignoredTagName}";
+      $paramString .= "&ignore_tags={self::IGNORED_TAG_NAME}";
 
       // Remove text entry from parameters
       unset($params['text']);
@@ -128,7 +173,7 @@ class DeepL {
         'PW Page Name: {$page->name}'
       ]);
 
-      wire('log')->save($this->errorLog, $message);
+      wire('log')->save(self::ERROR_LOG, $message);
     }
 
     // If we did not get a positive response, do not return the body data directly
@@ -161,7 +206,7 @@ class DeepL {
 
     // Replace ignored string matches with tagged versions
     foreach ($instancesFound as $instance) {
-      $taggedInstance = "<{$this->ignoredTagName}>{$instance}</{$this->ignoredTagName}>";
+      $taggedInstance = "<{self::IGNORED_TAG_NAME}>{$instance}</{self::IGNORED_TAG_NAME}>";
 
       $text = str_replace($instance, $taggedInstance, $text);
     }
@@ -177,7 +222,7 @@ class DeepL {
    * @return string                   String without tags
    */
   private function removeIgnoredTags(string $text, array $ignoredStrings): string {
-    return preg_replace('/(<\/?' . $this->ignoredTagName . '>)/', '', $text);
+    return preg_replace('/(<\/?' . self::IGNORED_TAG_NAME . '>)/', '', $text);
   }
 
   /**
