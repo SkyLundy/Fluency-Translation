@@ -1,11 +1,21 @@
 # Fluency for ProcessWire Changelog
 
+## 0.3.0 2021-07-19
+### New feature. Alpha version change.
+- Fluency now supports DeepL Free Developer accounts. Adds feature request made
+  in [Github issue #3](https://github.com/SkyLundy/Fluency-Translation/issues/3)
+- Fluency module configuration now requires that an account type be specified.
+- DeepL class interface updated and now requires an account type when called
+  programmatically. See updated documentation
+- Various refactoring and cleanup
+
 ## 0.2.5 2021-07-16
-### Alpha version change. *Critical update*, update recommended for all users.
-- Fixed issue where non-CKEditors/plain text fields would not reliably translate. Github issue #2 https://github.com/SkyLundy/Fluency-Translation/issues/2
+### *Critical update*, upgrade recommended for all users.
+- Fixed issue where non-CKEditors/plain text fields would not reliably translate.
+  Addresses [Github issue #2](https://github.com/SkyLundy/Fluency-Translation/issues/2)
 
 ## 0.2.4 2021-02-08
-### Alpha version change, upgrade recommended for all users
+### Bugfixes. Upgrade recommended for all users
 - Updated js that handles CKEditor field translation and population. Fixes an issue
   where some fields may not received translated content and other fields may not
   allow for translating content until the page/fields are saved at least once.
@@ -14,7 +24,7 @@
   Not relative to module update, just complaining.
 
 ## 0.2.3 2020-12-19
-### Alpha version change, *Critical upate*, upgrade recommended for all users
+### *Critical update*, upgrade recommended for all users
 - Critical update to AJAX calls. Previously, calls to the module were made using
   a GET request which ran into URL length problems on large bodies of text,
   notably in CKEditor content. Admin AJAX calls are now made using POST.
@@ -36,12 +46,12 @@
 - Reformatted CHANGELOG.md
 
 ## 0.2.2
-### Alpha version change, upgrade recommended
+### Bugfixes
 - Added ability for page-edit roles to use translation
 - Updated README.md to include inline CKEditor as not yet supported (is on the roadmap)
 
 ## 0.2.1
-### Alpha version change, Critical update, Upgrade recommended
+### *Critical update*, Upgrade recommended
 - Fixed critical failing issue in Chrome where text containing newlines were
   rejected on reason of security.[Now in compliance with this feature](https://www.chromestatus.com/feature/5735596811091968)
 - Added the ability to configure globally ignored strings that will not be
@@ -52,7 +62,7 @@
 - Updated README.md with known Grammarly plugin conflict
 
 ## 0.2.0 2020-11-06
-### Alpha version change, Critical update, Upgrade recommended
+### *Critical update*, Upgrade recommended. Alpha version change.
 This fixes an issue that can cause the translator to not function and display an
 error. Also significant updates to the UI. All users should update.
 - Translator tool can now be used if API key is present & valid but no languages
@@ -68,7 +78,7 @@ error. Also significant updates to the UI. All users should update.
 - Added license
 
 ## 0.1.1 2020-11-04
-### Minor version, Upgrade recommended
+### Bugfixes, Upgrade recommended
 - Various bugfixes and improvements
 - Contains better user-facing admin UI when module is not yet configured
 - Fixed issued where textarea fields did not get a translation trigger on the

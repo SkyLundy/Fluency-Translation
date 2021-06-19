@@ -6,7 +6,7 @@
  * Module settings configuration file
  */
 require_once 'classes/FluencyTools.class.php';
-require_once 'classes/DeepL.class.php';
+require_once 'engines/DeepL.class.php';
 
 class FluencyConfig extends ModuleConfig {
 
@@ -25,6 +25,7 @@ class FluencyConfig extends ModuleConfig {
   public function getDefaults() {
     return [
       'deepl_api_key' => '',
+      'deepl_account_type' => '',
       'api_key_valid' => 'invalid'
     ];
   }
@@ -57,7 +58,8 @@ class FluencyConfig extends ModuleConfig {
     if ($fluencyModule->deepl_api_key) {
       // Instantiate a new DeepL class instance to access the API
       $deepL = new DeepL([
-        'apiKey' => $fluencyModule->deepl_api_key
+        'apiKey' => $fluencyModule->deepl_api_key,
+        'accountType' => $fluencyModule->deepl_account_type
       ]);
 
       // Use API usage as key test
@@ -83,21 +85,53 @@ class FluencyConfig extends ModuleConfig {
       $this->modules->saveModuleConfigData('Fluency', $moduleConfig);
     }
 
+    ///////////////////////////////////
+    // DeepL API account type select //
+    ///////////////////////////////////
+    // DeepL offers two account levels, free and pro. Create a select to choose
+    $field = $this->modules->get('InputfieldSelect');
+    $field->name = 'deepl_account_type';
+    $field->label = __('DeepL Account Type');
+    $field->description = __('Select your DeepL account type');
+    $field->required = true;
+    $field->addOption('free', 'Free');
+    $field->addOption('pro', 'Pro');
+    $field->columnWidth = 50;
+
+    if (!$fluencyModule->deepl_account_type) {
+      $field->notes = __('Select and save to continue.');
+    }
+
+    if ($fluencyModule->deepl_account_type && $fluencyModule->deepl_api_key && $apiKeyIsValid) {
+      $field->collapsed = true;
+    }
+
+    $inputfields->add($field);
+
     /////////////////////////
     // DeepL API key field //
     /////////////////////////
     $field = $this->modules->get('InputfieldText');
     $field->name = "deepl_api_key";
     $field->label = __("DeepL API Key");
-    $field->description = __('Fluency relies on the DeepL developer API which is a paid service. Find out more here: https://www.deepl.com');
+    $field->description = __('An active DeepL Developer account is required. Ensure that your key and account type match.');
+    $field->columnWidth = 50;
     $field->required = true;
 
     // Control API key field visibility && error
+
+    // If no API key exists
     if (!$fluencyModule->deepl_api_key) {
-      $field->notes = __('A valid API key must be present to configure this module.');
-    } elseif ($fluencyModule->deepl_api_key && !$apiKeyIsValid) {
+      $field->notes = __('Enter and save to continue. Your API key will be validated.');
+    }
+
+    // If an API key is present but not valid
+    if ($fluencyModule->deepl_api_key && !$apiKeyIsValid) {
       $field->error($apiKeyCheckMessage);
-    } elseif ($fluencyModule->deepl_api_key && $apiKeyIsValid) {
+    }
+
+    // If API key exists and is valid
+    if ($fluencyModule->deepl_api_key && $apiKeyIsValid) {
       $field->notes = __('API key validated');
       $field->collapsed = true;
     }
@@ -105,7 +139,7 @@ class FluencyConfig extends ModuleConfig {
     $inputfields->add($field);
 
     // We only want to allow further configuration of the module if the DeepL
-    // API key has been added to the configuration.
+    // account type has been selected and API key has been added.
     if (!$fluencyModule->deepl_api_key || !$apiKeyIsValid) return $inputfields;
 
     ////////////////////////
@@ -182,7 +216,7 @@ class FluencyConfig extends ModuleConfig {
     // Create field and add markup
     $sourceLangMarkupField = $this->modules->get('InputfieldMarkup');
     $sourceLangMarkupField->label = __('Source Languages');
-    $sourceLangMarkupField->notes = __('The language of the content you are translating from must match one of these.');
+    $sourceLangMarkupField->notes = __('The language of the content you are translating from must be listed here.');
     $sourceLangMarkupField->value = $fieldValue;
     $sourceLangMarkupField->columnWidth = 50;
     // Added to fieldset below
@@ -289,11 +323,10 @@ class FluencyConfig extends ModuleConfig {
         // from the source languages.
         // Otherwise build the list from the destination languages
         if ($pwLanguageName === 'default') {
-          $langSelectField->label = __('ProcessWire Language: ') .
-                                    "{$pwLanguageTitle} " .
-                                    __('(default)');
-          $langSelectField->description = __('Translations will be made from this language into other languages.');
-          $langSelectField->notes = __('This language must be listed in the source languages above to work properly.');
+          $langSelectField->label = __('ProcessWire Default Language: ') .
+                                    "{$pwLanguageTitle}";
+          $langSelectField->description = __('Translations will be made from this language into associated languages below.');
+          $langSelectField->notes = __('This language must be listed in the source languages above.');
           $langSelectField->required = true;
 
           // Add each DeepL source language to the select field
@@ -327,7 +360,9 @@ class FluencyConfig extends ModuleConfig {
 
     $content .= '<p>' . __("Did you or your client find this module useful? Do you have cash just lying around? Did you sneak in a few extra bucks in your client contract to pass along to the module builders you love? Whatever the case, if you want to throw a tip my way, give that button a click! It will probably go towards bourbon.") . '</p>';
 
-    $content .= '<a href="https://paypal.me/noonesboy" style="display: block; margin: 20px auto 0; width: 250px;" rel="noopener" target="_blank"><img src="/site/modules/Fluency/img/paypal_me.png" alt="PayPal Me"></a>';
+    $content .= "<style>.button-donate {border:1px solid #29A2CE;box-shadow: 0 5px 10px rgba(0,0,0,.35);transition: box-shadow .5s,scale .4s;display: block; margin: 20px auto; width: 200px;}.button-donate:hover {box-shadow: 0 10px 20px rgba(0,0,0,.25);scale: 1.005;}</style>";
+
+    $content .= '<a class="button-donate" href="https://paypal.me/noonesboy" rel="noopener" target="_blank"><img src="/site/modules/Fluency/img/paypal_me.png" alt="PayPal Me"></a>';
 
     // Create field for content
     $field = $this->modules->get('InputfieldMarkup');
