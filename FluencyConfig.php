@@ -6,7 +6,7 @@
  * Module settings configuration file
  */
 require_once 'classes/FluencyTools.class.php';
-require_once 'engines/DeepL.class.php';
+// require_once 'engines/DeepL.class.php';
 
 class FluencyConfig extends ModuleConfig {
 
@@ -38,9 +38,10 @@ class FluencyConfig extends ModuleConfig {
    */
   public function getInputFields(): InputfieldWrapper {
     $inputfields = parent::getInputFields();
-    $fluencyTools = new FluencyTools;
-    $fluencyModule = $this->modules->get('Fluency');
-    $moduleConfig = $this->modules->getModuleConfigData('Fluency');
+    // $fluencyTools = new FluencyTools;
+    $modules = $this->modules;
+    $fluencyModule = $modules->get('Fluency');
+    $moduleConfig = $modules->getModuleConfigData('Fluency');
     $deeplSourceLanguages = null;
     $deeplTargetLanguages = null;
     $deeplApiUsage = null;
@@ -50,12 +51,73 @@ class FluencyConfig extends ModuleConfig {
     $apiHttpResponse = null;
 
     ///////////////////////////////
+    // Translation Engine Select //
+    ///////////////////////////////
+    $field = $this->modules->get('InputfieldSelect');
+    $field->name = 'fluency_translation_engine';
+    $field->label = __('Translation Engine');
+    $field->required = true;
+    $field->columnWidth = 100;
+
+    $engineDir = __DIR__ . '/engines';
+
+    // Get all translation engine files
+    $engineFiles = array_filter(scandir($engineDir), function($file) {
+      return strpos($file, '.fluencyEngine.php');
+    });
+
+    // Create engine select options
+    // Option value includes file location and class name to include/instantiate
+    // when selected
+    foreach ($engineFiles as $engineFile) {
+      $file = "{$engineDir}/{$engineFile}";
+
+      require_once $file;
+
+      $engine = 'ProcessWire\\' . explode('.', $engineFile)[0];
+      $engineInfo = $engine::getEngineInfo();
+
+      $optionLabel = "{$engineInfo->name} v{$engineInfo->apiVersion}";
+      $optionValue = json_encode(['file' => $file, 'class' => $engine]);
+
+      $field->addOption($optionValue, $optionLabel);
+    }
+
+    // If no translation engine has been selected, add instructions and
+    // return inputfields to render
+    if (!$fluencyModule->translation_engine) {
+      $field->notes = __('Select and save to continue.');
+      $inputfields->add($field);
+      return $inputfields;
+    }
+
+    // If an engine has been selected, collapse the engine select field and add
+    if ($fluencyModule->translation_engine) {
+      $field->collapsed = true;
+      $inputfields->add($field);
+    }
+
+    /////////////
+    // API Key //
+    /////////////
+    if ($fluencyModule->api_key) {
+
+    }
+
+
+    // if ($fluencyModule->deepl_account_type && $fluencyModule->deepl_api_key && $apiKeyIsValid) {
+    //   $field->collapsed = true;
+    // }
+
+
+
+    ///////////////////////////////
     // API key check & API calls //
     //////////////////////////////
     // Check if there's an api key
     // Use an API usage call as a key test
     // If successful, set data variables used below
-    if ($fluencyModule->deepl_api_key) {
+    if ($fluencyModule->translation_engine && $fluencyModule->deepl_api_key) {
       // Instantiate a new DeepL class instance to access the API
       $deepL = new DeepL([
         'apiKey' => $fluencyModule->deepl_api_key,
@@ -82,14 +144,14 @@ class FluencyConfig extends ModuleConfig {
 
       $moduleConfig['api_key_valid'] = $apiKeyIsValid;
 
-      $this->modules->saveModuleConfigData('Fluency', $moduleConfig);
+      $modules->saveModuleConfigData('Fluency', $moduleConfig);
     }
 
     ///////////////////////////////////
     // DeepL API account type select //
     ///////////////////////////////////
     // DeepL offers two account levels, free and pro. Create a select to choose
-    $field = $this->modules->get('InputfieldSelect');
+    $field = $modules->get('InputfieldSelect');
     $field->name = 'deepl_account_type';
     $field->label = __('DeepL Account Type');
     $field->description = __('Select your DeepL account type');

@@ -3,7 +3,7 @@
 // FileCompiler=0
 
 require_once 'classes/FluencyTools.class.php';
-require_once 'engines/DeepL.class.php';
+// require_once 'engines/DeepL.class.php';
 /**
  * Master module class for Fluency
  */
@@ -36,15 +36,15 @@ class Fluency extends Process implements Module {
   public function ready() {
     $this->fluencyTools = new FluencyTools;
 
-    $this->deepL = new DeepL([
-      'apiKey' => $this->deepl_api_key,
-      'accountType' => $this->deepl_account_type
-    ]);
+    // $this->deepL = new DeepL([
+    //   'apiKey' => $this->deepl_api_key,
+    //   'accountType' => $this->deepl_account_type
+    // ]);
 
-    if (!$this->moduleShouldInit()) return false;
+    // if (!$this->moduleShouldInit()) return false;
 
-    // CSS/JS assets
-    $this->insertAssets();
+    // // CSS/JS assets
+    // $this->insertAssets();
   }
 
   /**
@@ -105,11 +105,11 @@ class Fluency extends Process implements Module {
    * @return object Each langauge with associated data
    */
   private function getConfiguredLanguageData(): object {
+    $languageTitle = '';
     $languageData = [
       'source' => [],
       'target' => []
     ];
-    $languageTitle = '';
 
     // Iterate through all languages and package for front end consumption
     foreach ($this->languages as $language) {
