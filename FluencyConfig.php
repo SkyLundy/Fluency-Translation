@@ -85,23 +85,35 @@ class FluencyConfig extends ModuleConfig {
 
     // If no translation engine has been selected, add instructions and
     // return inputfields to render
-    if (!$fluencyModule->translation_engine) {
+    if (!$fluencyModule->fluency_translation_engine) {
       $field->notes = __('Select and save to continue.');
       $inputfields->add($field);
       return $inputfields;
     }
 
     // If an engine has been selected, collapse the engine select field and add
-    if ($fluencyModule->translation_engine) {
-      $field->collapsed = true;
-      $inputfields->add($field);
-    }
+    $field->collapsed = true;
+    $inputfields->add($field);
+
+    // Instantiate translation engine
+    [
+      'file' => $file,
+      'class' => $class
+    ] = json_decode($fluencyModule->fluency_translation_engine, true);
+
+    $translationEngine = new $class($moduleConfig);
+
+    var_dump($translationEngine);
+
+    die;
+
+
 
     /////////////
     // API Key //
     /////////////
-    if ($fluencyModule->api_key) {
-
+    if ($fluencyModule->translationEngine) {
+      // code...
     }
 
 
@@ -117,7 +129,7 @@ class FluencyConfig extends ModuleConfig {
     // Check if there's an api key
     // Use an API usage call as a key test
     // If successful, set data variables used below
-    if ($fluencyModule->translation_engine && $fluencyModule->deepl_api_key) {
+    if ($fluencyModule->fluency_translation_engine && $fluencyModule->deepl_api_key) {
       // Instantiate a new DeepL class instance to access the API
       $deepL = new DeepL([
         'apiKey' => $fluencyModule->deepl_api_key,

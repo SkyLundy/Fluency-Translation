@@ -11,7 +11,8 @@ $info = [
   'autoload' => true,
   'singular' => true,
   'requires' => [
-    'ProcessWire>=300'
+    'ProcessWire>=300',
+    'PHP>=7.1'
   ],
   'permission' => 'fluency-translate',
   'permissions' => [

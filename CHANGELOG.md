@@ -1,5 +1,8 @@
 # Fluency for ProcessWire Changelog
 
+### New Feature
+- Fluency now requires PHP >= 7.1
+
 ## 0.3.0 2021-07-19
 ### New feature. Alpha version change.
 - Fluency now supports DeepL Free Developer accounts. Adds feature request made

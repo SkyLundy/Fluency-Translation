@@ -55,9 +55,8 @@ class DeepL implements TranslationEngine {
    */
   private $accountType;
 
-  public function __construct(array $module) {
-    $this->apiKey = $module->api_key;
-    $this->setApiUrl($module->account_type);
+  public function __construct(array $moduleConfig) {
+    $this->apiKey = $moduleConfig['api_key'];
   }
 
   ///////////////////////////
@@ -72,6 +71,7 @@ class DeepL implements TranslationEngine {
     return (object) [
       'name' => 'DeepL',
       'apiVersion' => 3,
+      'configPrefix' => 'deepl',
       'filename' => basename(__FILE__)
     ];
   }
