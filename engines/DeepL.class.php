@@ -127,7 +127,7 @@ class DeepL {
       }
 
       // Set the ignored_tags parameter for translation
-      $paramString .= "&ignore_tags={self::IGNORED_TAG_NAME}";
+      $paramString .= "&ignore_tags=" . self::IGNORED_TAG_NAME;
 
       // Remove text entry from parameters
       unset($params['text']);
@@ -199,14 +199,16 @@ class DeepL {
 
     // Get all instances of ignored strings
     foreach ($ignoredStrings as $str) {
-      preg_match_all('/' . $str . '/i', $text, $matches);
+      preg_match_all('/' . preg_quote($str) . '/i', $text, $matches);
 
       $instancesFound = array_merge($instancesFound, $matches[0]);
     }
 
     // Replace ignored string matches with tagged versions
     foreach ($instancesFound as $instance) {
-      $taggedInstance = "<{self::IGNORED_TAG_NAME}>{$instance}</{self::IGNORED_TAG_NAME}>";
+      $ignoredTagName = self::IGNORED_TAG_NAME;
+
+      $taggedInstance = "<{$ignoredTagName}>{$instance}</{$ignoredTagName}>";
 
       $text = str_replace($instance, $taggedInstance, $text);
     }
