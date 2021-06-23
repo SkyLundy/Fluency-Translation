@@ -1,5 +1,10 @@
 # Fluency for ProcessWire Changelog
 
+## 0.3.1 2021-07-22
+### Bugfixes, feature added
+- Fixed issue with improper string interpolation when excluding strings as defined in the config.
+- Updated excluded words to handle strings with special characters such as Hanna codes.
+
 ## 0.3.0 2021-07-19
 ### New feature. Alpha version change.
 - Fluency now supports DeepL Free Developer accounts. Adds feature request made
