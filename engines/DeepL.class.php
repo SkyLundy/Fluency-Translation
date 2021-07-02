@@ -4,10 +4,6 @@
 
 /**
  * Handles all API interaction with the DeepL API
- *
- * API Info:
- *   - Limit is 30kb, chunk(?) - strlen($text) / 1024 => size in kb
- *   - 30kb is ~5000 words, or 30,000 characters
  */
 class DeepL {
 
@@ -136,8 +132,6 @@ class DeepL {
     // Add params to URL
     foreach ($params as $param => $val) $paramString .= "&{$param}={$val}";
 
-    $reqUrl .= $paramString;
-
     // Get cURL resource
     $ch = curl_init();
 
@@ -145,6 +139,8 @@ class DeepL {
     curl_setopt_array($ch, [
       CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
       CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_POST => true,
+      CURLOPT_POSTFIELDS => $paramString,
       CURLOPT_URL => $reqUrl,
       CURLOPT_USERAGENT => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)'
     ]);
@@ -164,13 +160,13 @@ class DeepL {
       $apiMsg = isset($data->message) ? $data->message : 'No message returned';
       $page = wire('page');
 
-      $message = implode("\n", [
-        "HTTP Code: {$httpResponseCode}",
-        "API Message: {$apiMsg}",
-        "Request Endpoint: {$endpoint}",
-        "Parameters: {$paramString}",
-        'PW Page ID: {$page->id}',
-        'PW Page Name: {$page->name}'
+      $output['message'] = json_encode([
+        'HTTP Code' => $httpResponseCode,
+        'API Message' => $apiMsg,
+        'Request Endpoint' => $endpoint,
+        'Parameters' => $paramString,
+        'PW Page ID' => $page->id,
+        'PW Page Name' => $page->name
       ]);
 
       wire('log')->save(self::ERROR_LOG, $message);
@@ -183,7 +179,6 @@ class DeepL {
     // $output['data'] = $httpResponseCode === 200 ? $data : null;
     $output['data'] = $data;
     $output['httpCode'] = $httpResponseCode;
-    $output['message'] = $this->getHttpMessage($httpResponseCode);
 
 
     return (object) $output;
