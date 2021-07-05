@@ -1,5 +1,8 @@
 # Fluency for ProcessWire Changelog
 
+## X.X.X
+- Updated repo URL in module info array
+
 ## 0.3.2 2021-07-03
 ### Bugfixes, enhancement
 - Fixed issue where translation length was limited becauses calls to DeepL API
