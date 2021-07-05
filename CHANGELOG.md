@@ -1,9 +1,19 @@
 # Fluency for ProcessWire Changelog
 
-### New Feature
-- Fluency now requires PHP >= 7.1
+## 0.3.2 2021-07-03
+### Bugfixes, enhancement
+- Fixed issue where translation length was limited becauses calls to DeepL API
+  were being made using GET rather than POST.
+- Testing using a DeepL Pro developer account allowed for reliable translation of
+  20,000+ words at once. Note: the time taken to translate this much content is
+  very noticeable.
 
-## 0.3.0 2021-07-19
+## 0.3.1 2021-06-22
+### Bugfixes, feature added
+- Fixed issue with improper string interpolation when excluding strings as defined in the config.
+- Updated excluded words to handle strings with special characters such as Hanna codes.
+
+## 0.3.0 2021-06-19
 ### New feature. Alpha version change.
 - Fluency now supports DeepL Free Developer accounts. Adds feature request made
   in [Github issue #3](https://github.com/SkyLundy/Fluency-Translation/issues/3)
@@ -12,7 +22,7 @@
   programmatically. See updated documentation
 - Various refactoring and cleanup
 
-## 0.2.5 2021-07-16
+## 0.2.5 2021-06-16
 ### *Critical update*, upgrade recommended for all users.
 - Fixed issue where non-CKEditors/plain text fields would not reliably translate.
   Addresses [Github issue #2](https://github.com/SkyLundy/Fluency-Translation/issues/2)
