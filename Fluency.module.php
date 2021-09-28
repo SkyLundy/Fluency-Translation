@@ -4,6 +4,7 @@
 
 require_once 'classes/FluencyTools.class.php';
 require_once 'engines/DeepL.class.php';
+
 /**
  * Master module class for Fluency
  */
@@ -109,6 +110,7 @@ class Fluency extends Process implements Module {
       'source' => [],
       'target' => []
     ];
+
     $languageTitle = '';
 
     // Iterate through all languages and package for front end consumption
@@ -192,7 +194,6 @@ class Fluency extends Process implements Module {
 
       $ignoredStrings = array_merge($configIgnoredStrings, $ignoredStrings);
     }
-
     // Configure additional parameters
     $parameters = array_merge([
       'preserve_formatting' => $this->api_param_preserve_formatting

@@ -208,10 +208,10 @@ class FluencyConfig extends ModuleConfig {
     $items = '';
 
     foreach ($deeplSourceLanguages as $lang) {
-      $items .= '<li>' . "{$lang->language} - {$lang->name}" . '</li>';
+      $items .= "<li>{$lang->language} - {$lang->name}</li>";
     }
 
-    $fieldValue = '<ol>' . $items . '</ol>';
+    $fieldValue = "<ol>{$items}</ol>";
 
     // Create field and add markup
     $sourceLangMarkupField = $this->modules->get('InputfieldMarkup');
@@ -230,10 +230,10 @@ class FluencyConfig extends ModuleConfig {
     $items = '';
 
     foreach ($deeplTargetLanguages as $lang) {
-      $items .= '<li>' . "{$lang->language} - {$lang->name}" . '</li>';
+      $items .= "<li>{$lang->language} - {$lang->name}</li>";
     }
 
-    $fieldValue = '<ol>' . $items . '</ol>';
+    $fieldValue = "<ol>{$items}</ol>";
 
     // Create field and add markup
     $targetLangMarkupField = $this->modules->get('InputfieldMarkup');
@@ -334,14 +334,21 @@ class FluencyConfig extends ModuleConfig {
             $langSelectField->addOption($lang->language, $lang->name);
           }
         } else {
-        // Create the language select to choose what language should be associated
-        // with languages that exist in the CMS
-        $langSelectField->label = __("ProcessWire Language: ") . $pwLanguageTitle;
-        $langSelectField->description = __("DeepL language to associate with ") . $pwLanguageTitle;
-        $langSelectField->columnWidth = 50;
+          // Create the language select to choose what language should be associated
+          // with languages that exist in the CMS
+          $langSelectField->label = __("ProcessWire Language: ") . $pwLanguageTitle;
+          $langSelectField->description = __("DeepL language to associate with ") . $pwLanguageTitle;
+          $langSelectField->columnWidth = 50;
+
+          $sortedTargetLanguages = $deeplTargetLanguages;
+
+          // Sort Target Languages
+          usort($sortedTargetLanguages, function($a, $b) {
+            return strcmp($a->name, $b->name);
+          });
 
           // Add each DeepL dest language to the select field
-          foreach ($deeplTargetLanguages as $lang) {
+          foreach ($sortedTargetLanguages as $lang) {
             $langSelectField->addOption($lang->language, $lang->name);
           }
         }

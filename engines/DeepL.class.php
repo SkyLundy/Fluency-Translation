@@ -29,7 +29,7 @@ class DeepL {
    * Name of error log
    * @var string
    */
-  private const ERROR_LOG = 'deeplwire-api';
+  private const ERROR_LOG = 'fluency-deepl';
 
   /**
    * The DeepL API key
@@ -160,7 +160,7 @@ class DeepL {
       $apiMsg = isset($data->message) ? $data->message : 'No message returned';
       $page = wire('page');
 
-      $output['message'] = json_encode([
+      $message = json_encode([
         'HTTP Code' => $httpResponseCode,
         'API Message' => $apiMsg,
         'Request Endpoint' => $endpoint,
@@ -168,6 +168,8 @@ class DeepL {
         'PW Page ID' => $page->id,
         'PW Page Name' => $page->name
       ]);
+
+      $output['message'] = $message;
 
       wire('log')->save(self::ERROR_LOG, $message);
     }
