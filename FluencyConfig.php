@@ -174,13 +174,13 @@ class FluencyConfig extends ModuleConfig {
 
     $charLimit = $deeplApiUsage->character_limit;
     $charsUsed = $deeplApiUsage->character_count;
-    $charsRemain = $deeplApiUsage->character_count;
+    $charsRemain = $charLimit - $charsUsed;
     $totalUsage = round($charsUsed / $charLimit * 100);
 
     $usageTable->row([
       number_format($charLimit),
       number_format($charsUsed),
-      number_format($charLimit - $charsUsed),
+      number_format($charsRemain),
       number_format($totalUsage) . '%'
     ]);
 
