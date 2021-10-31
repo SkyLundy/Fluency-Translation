@@ -355,7 +355,7 @@ Fluency.MultilanguageFields = (function() {
   var _bindNewMultilanguageFieldsOnInsertion = function() {
     var watchNode = document.getElementById('pw-content-body')
 
-    var onMutation = function(mutationsList, observer) {
+    new MutationObserver(function(mutationsList, observer) {
       for (var mutation of mutationsList) {
         var inputfieldContainers = mutation.target
                                            .querySelectorAll('.LanguageSupport')
@@ -365,11 +365,7 @@ Fluency.MultilanguageFields = (function() {
           _addElementsToMultilangContainer(inputfieldContainer)
         }
       }
-    }
-
-    var observer = new MutationObserver(onMutation)
-
-    observer.observe(watchNode, {
+    }).observe(watchNode, {
       childList: true,
       subtree: true
     })
