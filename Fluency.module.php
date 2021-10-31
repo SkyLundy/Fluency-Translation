@@ -31,11 +31,24 @@ class Fluency extends Process implements Module {
   private $adminPageName = 'fluency';
 
   /**
+   * This is assigned an instance of FluencyTools when module is ready
+   * @var null
+   */
+  private $fluencyTools = null;
+
+  /**
+   * This holds the module config data. Is assigned when module is ready
+   * @var array
+   */
+  private $fluencyConfig;
+
+  /**
    * Executes module when PW is ready
    * @return void
    */
   public function ready() {
     $this->fluencyTools = new FluencyTools;
+    $this->fluencyConfig = $this->modules->getModuleConfigData('Fluency');
 
     $this->deepL = new DeepL([
       'apiKey' => $this->deepl_api_key,
@@ -55,7 +68,7 @@ class Fluency extends Process implements Module {
    * @return bool
    */
   private function moduleShouldInit(): bool {
-    $moduleConfig = $this->modules->getModuleConfigData('Fluency');
+    $moduleConfig = $this->fluencyConfig;
 
     return $this->page->name !== 'login' &&
            $this->deepl_api_key &&
@@ -164,9 +177,25 @@ class Fluency extends Process implements Module {
    * @return array Array with all boot data needed by client UI scripts.
    */
   private function getClientBootData(): object {
+    $languages = $this->getConfiguredLanguageData();
+    $configTriggerText = $this->fluencyConfig['translate_trigger_text'];
+    $triggerText = null;
+
+    $triggerText = $configTriggerText ?? "Translate from {$languages->source->title}";
+
+    // Get configured translation trigger text or create the default
+    // if ($configTriggerText) {
+    //   $triggerText = $configTriggerText;
+    // }
+
+    // if (!$configTriggerText) {
+    //   $triggerText = "Translate from {$languages->source->title}";
+    // }
+
     return (object) [
-      'languages' => $this->getConfiguredLanguageData(),
-      'pageName' => $this->page->name
+      'languages' => $languages,
+      'pageName' => $this->page->name,
+      'translateTriggerText' => $triggerText
     ];
   }
 
@@ -273,6 +302,7 @@ class Fluency extends Process implements Module {
 
     header('Content-Type: application/json');
     header($this->deepL->getHttpMessage($returnData->httpCode));
+
     return json_encode($returnData);
   }
 

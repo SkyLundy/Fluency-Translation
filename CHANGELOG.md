@@ -1,7 +1,11 @@
 # Fluency for ProcessWire Changelog
 
-## X.X.X
-- Updated repo URL in module info array
+## 0.3.3
+### Bugfixes, enhancements
+- Updated repo URL in module info array.
+- Fixed hard coded link for PayPal donate button image.
+- Translation trigger text is now configurable in module settings. Defaults to
+  "Translate from {PW default language name}"
 
 ## 0.3.2 2021-07-03
 ### Bugfixes, enhancement

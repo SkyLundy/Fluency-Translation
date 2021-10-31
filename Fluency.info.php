@@ -5,7 +5,7 @@
 $info = [
   'title' => 'Fluency',
   'version' => '032',
-  'href' => 'https://github.com/SkyLundy/Fluency-Translation',
+  'href' => 'https://gitlab.com/SkyLundy/fluency-processwire.git',
   'icon' => 'language',
   'summary' => __("Translation service integration module that uses the DeepL machine learning langauge translation API."),
   'autoload' => true,

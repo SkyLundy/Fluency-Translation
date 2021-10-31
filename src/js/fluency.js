@@ -75,6 +75,12 @@ Fluency.MultilanguageFields = (function() {
    */
   var targetLanguages = []
 
+  /**
+   * This is the text that is used for the translation trigger
+   * This is delivered in the boot data payload
+   * @type {String}
+   */
+  var translateTriggerText = ''
 
   // Initializes admin interface
   /**
@@ -213,7 +219,8 @@ Fluency.MultilanguageFields = (function() {
     triggerEl.setAttribute('href', '#0')
     triggerEl.setAttribute('class', 'fluency-translate-trigger')
     triggerEl.setAttribute('data-fluency-target-language', targetLanguage.deeplCode)
-    triggerEl.textContent = "Translate from English"
+    triggerEl.textContent = translateTriggerText
+    // triggerEl.textContent = "Translate from English"
 
     // Bind the event listener to trigger translation for this field.
     _bindTranslationTrigger(triggerEl, inputfieldContainer)

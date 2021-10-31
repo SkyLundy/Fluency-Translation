@@ -363,13 +363,15 @@ class FluencyConfig extends ModuleConfig {
     ////////////////
     // Beg-a-Thon //
     ////////////////
+    $moduleBaseUrl = wire('config')->urls->get($this->modules->get('Fluency'));
+
     $content = '<h3>' . __("Want to brighten someone's day?") . '</h3>';
 
     $content .= '<p>' . __("Did you or your client find this module useful? Do you have cash just lying around? Did you sneak in a few extra bucks in your client contract to pass along to the module builders you love? Whatever the case, if you want to throw a tip my way, give that button a click! It will probably go towards bourbon.") . '</p>';
 
     $content .= "<style>.button-donate {border:1px solid #29A2CE;box-shadow: 0 5px 10px rgba(0,0,0,.35);transition: box-shadow .5s,scale .4s;display: block; margin: 20px auto; width: 200px;}.button-donate:hover {box-shadow: 0 10px 20px rgba(0,0,0,.25);scale: 1.005;}</style>";
 
-    $content .= '<a class="button-donate" href="https://paypal.me/noonesboy" rel="noopener" target="_blank"><img src="/site/modules/Fluency/img/paypal_me.png" alt="PayPal Me"></a>';
+    $content .= "<a class='button-donate' href='https://paypal.me/noonesboy' rel='noopener' target='_blank'><img src='{$moduleBaseUrl}/img/paypal_me.png' alt='PayPal Me'></a>";
 
     // Create field for content
     $field = $this->modules->get('InputfieldMarkup');
