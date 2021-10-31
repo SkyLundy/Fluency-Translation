@@ -2,10 +2,17 @@
 
 ## 0.3.3
 ### Bugfixes, enhancements
-- Updated repo URL in module info array.
+- Module now specifies PHP 7.0 as minimum version.
 - Fixed hard coded link for PayPal donate button image.
 - Translation trigger text is now configurable in module settings. Defaults to
-  "Translate from {PW default language name}"
+  "Translate from {PW default language name}". This allows for the use of trigger
+  text that is not English.
+- The Translation page name/menu item is now translatable, enabling better module
+  localization
+- Removed hard coding of module path in FluencyTools that would cause errors
+  loading/rendering markup for the general translation tool.
+- Translation triggers no longer render for locked fields.
+-
 
 ## 0.3.2 2021-07-03
 ### Bugfixes, enhancement

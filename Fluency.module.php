@@ -179,23 +179,11 @@ class Fluency extends Process implements Module {
   private function getClientBootData(): object {
     $languages = $this->getConfiguredLanguageData();
     $configTriggerText = $this->fluencyConfig['translate_trigger_text'];
-    $triggerText = null;
-
-    $triggerText = $configTriggerText ?? "Translate from {$languages->source->title}";
-
-    // Get configured translation trigger text or create the default
-    // if ($configTriggerText) {
-    //   $triggerText = $configTriggerText;
-    // }
-
-    // if (!$configTriggerText) {
-    //   $triggerText = "Translate from {$languages->source->title}";
-    // }
 
     return (object) [
       'languages' => $languages,
       'pageName' => $this->page->name,
-      'translateTriggerText' => $triggerText
+      'translateTriggerText' => $configTriggerText ?? "Translate from {$languages->source->title}"
     ];
   }
 

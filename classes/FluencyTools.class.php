@@ -13,10 +13,7 @@ class FluencyTools {
    * @param  array  $vars     Array of placeholders/values to insert
    * @return string           Completed markup for output
    */
-  public function getMarkup(
-    string $filename,
-    array $tplVars = []
-  ): string {
+  public function getMarkup(string $filename, array $tplVars = []): string {
     // Define defaults so they don't have to be entered if not needed at call
     $vars = array_merge([
       '{CLASSES}' => '',
@@ -24,11 +21,8 @@ class FluencyTools {
       '{TARGET}' => '_blank'
     ], $tplVars);
 
-    $moduleTemplatesDir = wire('config')->paths->siteModules .
-                          "Fluency/fluency_templates/";
-
     // Get file, insert variables
-    $markup = file_get_contents("{$moduleTemplatesDir}{$filename}");
+    $markup = file_get_contents(__DIR__ . "/../fluency_templates/{$filename}");
     $markup = strtr($markup, $vars);
 
     return $markup;

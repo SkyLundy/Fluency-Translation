@@ -95,6 +95,7 @@ Fluency.MultilanguageFields = (function() {
     // Set module-wide language boot data vars
     sourceLanguage = bootData.data.languages.source
     targetLanguages = bootData.data.languages.target
+    translateTriggerText = bootData.data.translateTriggerText
 
     if (!_moduleShouldInit()) return false
 
@@ -125,13 +126,28 @@ Fluency.MultilanguageFields = (function() {
   }
 
   /**
+   * Determines if a specified inputfield container has an input that should
+   * have translation available
+   * @param  {HTMLElement} inputfieldContainer
+   * @return {bool}
+   */
+  var _shouldBeTranslatable = function(inputfieldContainer) {
+    var noTriggerPresent = !inputfieldContainer.querySelector('.fluency-translate-trigger-container'),
+        hasInputfields = inputfieldContainer.querySelectorAll('input, iframe, textarea').length
+
+    return noTriggerPresent && hasInputfields
+  }
+
+  /**
    * This adds all Fluently elements needed for translation to a given
    * element requiring translation triggers and an activity overlay
-   * @param {[type]} inputfieldContainer [description]
+   * @param {void} inputfieldContainer [description]
    */
   var _addElementsToMultilangContainers = function(inputfieldContainer) {
-    _addTranslateTriggers(inputfieldContainer)
-    _addActivityOverlays(inputfieldContainer)
+    if (_shouldBeTranslatable(inputfieldContainer)) {
+      _addTranslateTriggers(inputfieldContainer)
+      _addActivityOverlays(inputfieldContainer)
+    }
   }
 
   /**
@@ -141,31 +157,27 @@ Fluency.MultilanguageFields = (function() {
   var _addTranslateTriggers = function(inputfieldContainer) {
     // shouldAdd determines if this element should receive a trigger/message in
     // the event the DOM is traversed and finds an element that was already initialized
-    var shouldAdd = !inputfieldContainer.querySelector('.fluency-translate-trigger-container'),
-        inputfieldLanguage = inputfieldContainer.dataset.language,
+    var inputfieldLanguage = inputfieldContainer.dataset.language,
         targetLanguage = Fluency.Tools.getTargetLanguageById(
                            inputfieldLanguage,
                            targetLanguages
                          )
 
-    // Check if this field has been initialized
-    if (shouldAdd) {
       // If the PW language matches the source language, add available message
-      // If the PW language matches the target language, add trigger
-      // Else, add translation not available label
-      if (inputfieldLanguage == sourceLanguage.id) {
-        _addTranslationLabelToField(
-          inputfieldContainer,
-          'Translation Service Available'
-        )
-      } else if (targetLanguage && inputfieldLanguage == targetLanguage.id) {
-        _addTranslationTriggerToField(inputfieldContainer)
-      } else {
-        _addTranslationLabelToField(
-          inputfieldContainer,
-          'Translation not available for this language'
-        )
-      }
+    // If the PW language matches the target language, add trigger
+    // Else, add translation not available label
+    if (inputfieldLanguage == sourceLanguage.id) {
+      _addTranslationLabelToField(
+        inputfieldContainer,
+        'Translation Service Available'
+      )
+    } else if (targetLanguage && inputfieldLanguage == targetLanguage.id) {
+      _addTranslationTriggerToField(inputfieldContainer)
+    } else {
+      _addTranslationLabelToField(
+        inputfieldContainer,
+        'Translation not available for this language'
+      )
     }
   }
 

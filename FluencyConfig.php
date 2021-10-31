@@ -282,6 +282,17 @@ class FluencyConfig extends ModuleConfig {
     $field->addOption(0, 'No (DeepL default)');
     $inputfields->add($field);
 
+    ////////////////////////////
+    // Translate Trigger Text //
+    ////////////////////////////
+
+    $field = $this->modules->get('InputfieldText');
+    $field->name = "translate_trigger_text";
+    $field->label = __("UI Translate Trigger Text");
+    $field->description = __('This is the text used for the translation trigger next to fields when editing content.');
+    $field->placeholder = 'Default: Translate from {default language name}';
+    $inputfields->add($field);
+
     /////////////////////////////
     // Language Configurations //
     /////////////////////////////
@@ -307,8 +318,7 @@ class FluencyConfig extends ModuleConfig {
     // Set up a language association for all languages present in PW
     // This will also assign a null value when new languages are found that
     // are not in the language associations value
-    if (gettype($deeplTargetLanguages) == 'array' &&
-        count($deeplTargetLanguages)) {
+    if (gettype($deeplTargetLanguages) == 'array' && count($deeplTargetLanguages)) {
       foreach ($this->languages as $language) {
         // Get information from languages configured in ProcessWire
         $pwLanguageName = $language->getLanguageValue($userLanguage, 'name');
