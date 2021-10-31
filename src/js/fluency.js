@@ -119,20 +119,18 @@ Fluency.MultilanguageFields = (function() {
    */
   var _initMultilanguageFields = function() {
     for (var inputfieldContainer of multilangInputfieldContainers) {
-
-
-      _addElementsToMultilangContainers(inputfieldContainer)
+      _addElementsToMultilangContainer(inputfieldContainer)
     }
   }
 
   /**
    * Determines if a specified inputfield container has an input that should
-   * have translation available
+   * have translation available. Also prevents locked fields from initializing
    * @param  {HTMLElement} inputfieldContainer
    * @return {bool}
    */
   var _shouldBeTranslatable = function(inputfieldContainer) {
-    var noTriggerPresent = !inputfieldContainer.querySelector('.fluency-translate-trigger-container'),
+    var noTriggerPresent = !inputfieldContainer.hasAttribute('data-fluency-initialized'),
         hasInputfields = inputfieldContainer.querySelectorAll('input, iframe, textarea').length
 
     return noTriggerPresent && hasInputfields
@@ -143,10 +141,13 @@ Fluency.MultilanguageFields = (function() {
    * element requiring translation triggers and an activity overlay
    * @param {void} inputfieldContainer [description]
    */
-  var _addElementsToMultilangContainers = function(inputfieldContainer) {
+  var _addElementsToMultilangContainer = function(inputfieldContainer) {
     if (_shouldBeTranslatable(inputfieldContainer)) {
       _addTranslateTriggers(inputfieldContainer)
       _addActivityOverlays(inputfieldContainer)
+
+      // Add an initialized data attribute so that they aren't initialized again
+      inputfieldContainer.setAttribute('data-fluency-initialized', true)
     }
   }
 
@@ -155,8 +156,6 @@ Fluency.MultilanguageFields = (function() {
    * @return {void}
    */
   var _addTranslateTriggers = function(inputfieldContainer) {
-    // shouldAdd determines if this element should receive a trigger/message in
-    // the event the DOM is traversed and finds an element that was already initialized
     var inputfieldLanguage = inputfieldContainer.dataset.language,
         targetLanguage = Fluency.Tools.getTargetLanguageById(
                            inputfieldLanguage,
@@ -357,14 +356,13 @@ Fluency.MultilanguageFields = (function() {
     var watchNode = document.getElementById('pw-content-body')
 
     var onMutation = function(mutationsList, observer) {
-      for(const mutation of mutationsList) {
+      for (var mutation of mutationsList) {
         var inputfieldContainers = mutation.target
-                                      .querySelectorAll('.LanguageSupport')
+                                           .querySelectorAll('.LanguageSupport')
 
         // Initialize requirements for containers found
         for (var inputfieldContainer  of inputfieldContainers) {
-          _addTranslateTriggers(inputfieldContainer)
-          _addActivityOverlays(inputfieldContainer)
+          _addElementsToMultilangContainer(inputfieldContainer)
         }
       }
     }
