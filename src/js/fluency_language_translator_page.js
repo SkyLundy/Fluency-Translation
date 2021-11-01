@@ -29,6 +29,13 @@ Fluency.LanguageTranslatorPage = (function() {
   var targetLanguage = null
 
   /**
+   * Holds the UI text returned from the module on boot. Used to build the
+   * client interface
+   * @type {Object}
+   */
+  var uiText = {}
+
+  /**
    * Initializes module
    * Will not initialize if there's no language ID that can be pulled from the
    * URL under the language_id parameter
@@ -39,6 +46,7 @@ Fluency.LanguageTranslatorPage = (function() {
   var init = function(bootData) {
     sourceLanguage = bootData.data.languages.source
     targetLanguages = bootData.data.languages.target
+    uiText = bootData.data.ui.text
     targetLanguage= _getTargetLanguage()
 
     var inputfields = document.getElementById('pw-content-body')
@@ -105,7 +113,8 @@ Fluency.LanguageTranslatorPage = (function() {
       var triggerEl = document.createElement('a')
           triggerEl.setAttribute('href', '#0')
           triggerEl.setAttribute('class', 'fluency-translate-trigger')
-          triggerEl.textContent = "Translate from English"
+          triggerEl.textContent = uiText.translateTrigger
+          // triggerEl.textContent = "Translate from English"
 
       // Add the child element created to the trigger container
       // Add the trigger container to the inputfield container element
@@ -164,7 +173,7 @@ Fluency.LanguageTranslatorPage = (function() {
       // Build a notifier element
       var messageEl = document.createElement('span')
       messageEl.setAttribute('class', 'fluency-translate-notifier')
-      messageEl.textContent = 'Translation not available for this language'
+      messageEl.textContent = uiText.translationNotAvailable
 
       elContainer.appendChild(messageEl)
 
