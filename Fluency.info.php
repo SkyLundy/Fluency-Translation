@@ -20,6 +20,6 @@ $info = [
   ],
   'page' => [
     'name' => 'fluency',
-    'title' => __('Translation')
+    'title' => __('XTranslation')
   ]
 ];

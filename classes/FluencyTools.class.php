@@ -27,5 +27,4 @@ class FluencyTools {
 
     return $markup;
   }
-
 }

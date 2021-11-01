@@ -78,9 +78,9 @@ Fluency.MultilanguageFields = (function() {
   /**
    * This is the text that is used for the translation trigger
    * This is delivered in the boot data payload
-   * @type {String}
+   * @type {Object}
    */
-  var translateTriggerText = ''
+  var uiText = {}
 
   // Initializes admin interface
   /**
@@ -95,7 +95,8 @@ Fluency.MultilanguageFields = (function() {
     // Set module-wide language boot data vars
     sourceLanguage = bootData.data.languages.source
     targetLanguages = bootData.data.languages.target
-    translateTriggerText = bootData.data.translateTriggerText
+    // translateTriggerText = bootData.data.translateTriggerText
+    uiText = bootData.data.ui.text
 
     if (!_moduleShouldInit()) return false
 
@@ -129,11 +130,12 @@ Fluency.MultilanguageFields = (function() {
    * @param  {HTMLElement} inputfieldContainer
    * @return {bool}
    */
-  var _shouldBeTranslatable = function(inputfieldContainer) {
+  var _shouldInitContainer = function(inputfieldContainer) {
     var noTriggerPresent = !inputfieldContainer.hasAttribute('data-fluency-initialized'),
-        hasInputfields = inputfieldContainer.querySelectorAll('input, iframe, textarea').length
+        hasInputfields = inputfieldContainer.querySelectorAll('input, iframe, textarea').length,
+        notUiButton = !inputfieldContainer.querySelectorAll('.ui-button').length
 
-    return noTriggerPresent && hasInputfields
+    return noTriggerPresent && hasInputfields && notUiButton
   }
 
   /**
@@ -142,7 +144,7 @@ Fluency.MultilanguageFields = (function() {
    * @param {void} inputfieldContainer [description]
    */
   var _addElementsToMultilangContainer = function(inputfieldContainer) {
-    if (_shouldBeTranslatable(inputfieldContainer)) {
+    if (_shouldInitContainer(inputfieldContainer)) {
       _addTranslateTriggers(inputfieldContainer)
       _addActivityOverlays(inputfieldContainer)
 
@@ -168,14 +170,16 @@ Fluency.MultilanguageFields = (function() {
     if (inputfieldLanguage == sourceLanguage.id) {
       _addTranslationLabelToField(
         inputfieldContainer,
-        'Translation Service Available'
+        uiText.translationAvailable
+        // 'Translation Service Available'
       )
     } else if (targetLanguage && inputfieldLanguage == targetLanguage.id) {
       _addTranslationTriggerToField(inputfieldContainer)
     } else {
       _addTranslationLabelToField(
         inputfieldContainer,
-        'Translation not available for this language'
+        uiText.translationNotAvailable
+        // 'Translation not available for this language'
       )
     }
   }
@@ -313,20 +317,6 @@ Fluency.MultilanguageFields = (function() {
   }
 
   /**
-   * Checks if a container should be initialized
-   *
-   * @param {HTMLElement} langInput Inputfield element
-   * @param {bool}                  Boolean
-   */
-  var _shouldInitializeContainer = function(inputfieldContainer) {
-    var isInitialized = inputfieldContainer.classList.contains('fluency-translate-trigger-container'),
-        missingInputs = !inputfieldContainer.querySelector('input, textarea'),
-        languagePresent = inputfieldContainer.dataset.language
-
-    return (!isInitialized && !missingInputs) && languagePresent
-  }
-
-  /**
    * Adds translation activity overlay
    * @return {void}
    */
@@ -422,6 +412,12 @@ Fluency.PageNameFields = (function() {
   ]
 
   /**
+   * Holds the UI text returned from the module
+   * @type {Object}
+   */
+  var uiText = {}
+
+  /**
    * Initializes module
    * Will not initialize if there are no page name fields present or
    * current page is home page (id=1)
@@ -439,6 +435,7 @@ Fluency.PageNameFields = (function() {
 
     sourceLanguage = bootData.data.languages.source
     targetLanguages = bootData.data.languages.target
+    uiText = bootData.data.ui.text
 
     _addTranslateTriggers(pageNameFields)
     _addActivityOverlays(pageNameFields)
@@ -491,10 +488,10 @@ Fluency.PageNameFields = (function() {
       // Set message for incompatible fields
       // Set message for fields that are not configured
       if(targetLanguage && disabledLanguages.includes(targetLanguage.deeplCode)) {
-        _addTranslationLabelToField(thisContainer, 'Translation not available for page names in this language')
+        _addTranslationLabelToField(thisContainer, uiText.pageNameNotAvailable)
         continue
       } else if (!targetLanguage) {
-        _addTranslationLabelToField(thisContainer, 'Translation not available for this language')
+        _addTranslationLabelToField(thisContainer, uiText.translationNotAvailable)
         continue
       }
 
@@ -508,7 +505,7 @@ Fluency.PageNameFields = (function() {
           triggerEl.setAttribute('href', '#0')
           triggerEl.setAttribute('class', 'fluency-translate-trigger')
           triggerEl.setAttribute('data-fluency-target-language', targetLanguage.deeplCode)
-          triggerEl.textContent = "Translate from English"
+          triggerEl.textContent = uiText.translateTrigger
 
       _bindTranslationTrigger(triggerEl, targetInput)
 

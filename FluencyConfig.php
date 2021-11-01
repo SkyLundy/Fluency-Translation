@@ -247,7 +247,7 @@ class FluencyConfig extends ModuleConfig {
     /////////////////////////////////////
     // Create fieldset
     $fieldset = $this->modules->get('InputfieldFieldset');
-    $fieldset->name = 'fieldset_language_associations';
+    $fieldset->name = 'fieldset_available_langauges';
     $fieldset->label = __('Available DeepL Languages');
     $fieldset->description = __('DeepL recognizes the following languages and may be used for translation. Source Languages are those which your content must be in to be translated. Destination Languages are those that DeepL will translate to.');
 
@@ -256,21 +256,26 @@ class FluencyConfig extends ModuleConfig {
     $fieldset->append($targetLangMarkupField);
     $inputfields->add($fieldset);
 
-    ////////////////////////////
-    // Strings not translated //
-    ////////////////////////////
+    /////////////////////////
+    // Translation Options //
+    /////////////////////////
 
+    // ===== Create fieldset
+    $fieldset = $this->modules->get('InputfieldFieldset');
+    $fieldset->name = 'fieldgroup_translation_options';
+    $fieldset->label = __('Translation Options');
+    $fieldset->description = __('Configure translation behavior.');
+
+    // Strings not translated
     $field = $this->modules->get('InputfieldTextarea');
     $field->name = 'non_translated_strings';
     $field->label = __('Global Non-Translated Strings');
     $field->description = __('Add strings here that when present in content should not be translated. This is useful for things like brand names. For example, if the name of a company is Red Rock Mountain Climbing and it should always appear that way, then adding that string here will prevent it from being translated globally.');
     $field->notes = __('Provide multiple strings as comma separated values, values are case insensitive');
     $field->columnWidth = 50;
-    $inputfields->add($field);
+    $fieldset->add($field);
 
-    ////////////////////////////////
-    // Preserve Formatting Option //
-    ////////////////////////////////
+    // Preserve Formatting Option
     $field = $this->modules->get('InputfieldSelect');
     $field->name = 'api_param_preserve_formatting';
     $field->label = __('Preserve Formatting');
@@ -280,18 +285,9 @@ class FluencyConfig extends ModuleConfig {
     $field->columnWidth = 50;
     $field->addOption(1, 'Yes (Recommended)');
     $field->addOption(0, 'No (DeepL default)');
-    $inputfields->add($field);
+    $fieldset->add($field);
 
-    ////////////////////////////
-    // Translate Trigger Text //
-    ////////////////////////////
-
-    $field = $this->modules->get('InputfieldText');
-    $field->name = "translate_trigger_text";
-    $field->label = __("UI Translate Trigger Text");
-    $field->description = __('This is the text used for the translation trigger next to fields when editing content.');
-    $field->placeholder = 'Default: Translate from {default language name}';
-    $inputfields->add($field);
+    $inputfields->add($fieldset);
 
     /////////////////////////////
     // Language Configurations //

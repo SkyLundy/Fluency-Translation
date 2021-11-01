@@ -31,7 +31,7 @@ class Fluency extends Process implements Module {
   private $adminPageName = 'fluency';
 
   /**
-   * This is assigned an instance of FluencyTools when module is ready
+   * This is assigned an instance of fluencyTools when module is ready
    * @var null
    */
   private $fluencyTools = null;
@@ -171,19 +171,33 @@ class Fluency extends Process implements Module {
   }
 
   /**
+   * Gets the text for various UI components
+   * @return object
+   */
+  private function getLocalizations(): object {
+    $localizationDir = __DIR__ . '/module_localizations/';
+    $clientRendered = require_once "{$localizationDir}/content_editing.php";
+    $translationTool = require_once "{$localizationDir}/translation_tool.php";
+
+    return (object) [
+      'clientRendered' => $clientRendered($this),
+      'translationTool' => $translationTool()
+    ];
+  }
+
+  /**
    * This returns a data payload needed by the client UI JS to add translation
    * triggers and interactivity to fields in admin pages.
    *
    * @return array Array with all boot data needed by client UI scripts.
    */
   private function getClientBootData(): object {
-    $languages = $this->getConfiguredLanguageData();
-    $configTriggerText = $this->fluencyConfig['translate_trigger_text'];
-
     return (object) [
-      'languages' => $languages,
+      'languages' => $this->getConfiguredLanguageData(),
       'pageName' => $this->page->name,
-      'translateTriggerText' => $configTriggerText ?? "Translate from {$languages->source->title}"
+      'ui' => (object) [
+        'text' => $this->getLocalizations()->clientRendered
+      ]
     ];
   }
 
@@ -301,6 +315,7 @@ class Fluency extends Process implements Module {
    */
   public function ___execute(): string {
     $moduleConfig = $this->modules->getModuleConfigData('Fluency');
+    $translationToolUiText = $this->getLocalizations()->translationTool;
 
     //////////////////////
     // Create page form //
@@ -317,11 +332,8 @@ class Fluency extends Process implements Module {
         (isset($moduleConfig['api_key_valid']) && !$moduleConfig['api_key_valid'])) {
       // Create markup for field
 
-      $content = '';
-
-      $content = '<h1>' . __("Sorry, translation is not ready yet.") . '</h1>';
-
-      $content .= '<p>' . __("This module needs to be configured before use. Please add a valid DeepL API key in Fluency's module configuration.") . '</p>';
+      $content = "<h1>{$translationToolUiText->unconfiguredErrorTitle}</h1>";
+      $content .= "<p>{$translationToolUiText->unconfiguredErrorBody}</p>";
 
       // Create field for markup
       $field = $this->modules->get('InputfieldMarkup');
@@ -341,8 +353,8 @@ class Fluency extends Process implements Module {
     /////////////////////
     $fieldset = $this->modules->get('InputfieldFieldset');
     $fieldset->name = 'fieldset_fluency_translator_tool';
-    $fieldset->label = __('Fluency Translation Tool');
-    $fieldset->description = __('Translate your text to any language');
+    $fieldset->label = $translationToolUiText->title;
+    $fieldset->description = $translationToolUiText->description;
     $fieldset->addClass('fluency-translator-tool');
     $fieldset->collapsed = Inputfield::collapsedNever;
     $fieldset->icon = 'language';
@@ -355,7 +367,7 @@ class Fluency extends Process implements Module {
 
     $sourceLangSelect = $this->modules->get('InputfieldSelect');
     $sourceLangSelect->name = "fluency_translate_source_lang";
-    $sourceLangSelect->label = __('Translate from...');
+    $sourceLangSelect->label = $translationToolUiText->fieldLabelFrom;
     $sourceLangSelect->required = true;
     $sourceLangSelect->columnWidth = 50;
     $sourceLangSelect->collapsed = Inputfield::collapsedNever;
@@ -391,7 +403,7 @@ class Fluency extends Process implements Module {
 
     $targetLangSelect = $this->modules->get('InputfieldSelect');
     $targetLangSelect->name = "fluency_translate_target_lang";
-    $targetLangSelect->label = __('Translate to...');
+    $targetLangSelect->label = $translationToolUiText->fieldLabelTo;
     $targetLangSelect->required = true;
     $targetLangSelect->columnWidth = 50;
     $targetLangSelect->collapsed = Inputfield::collapsedNever;
@@ -407,7 +419,7 @@ class Fluency extends Process implements Module {
     // ===== Create source content textarea
     $sourceLangContent = $this->modules->get('InputfieldTextarea');
     $sourceLangContent->name = "fluency_translate_source_content";
-    $sourceLangContent->label = __('Your Text:');
+    $sourceLangContent->label = $translationToolUiText->fieldLabelYourText;
     $sourceLangContent->columnWidth = 50;
     $sourceLangContent->collapsed = Inputfield::collapsedNever;
     $sourceLangContent->themeInputSize = 's';
@@ -419,7 +431,7 @@ class Fluency extends Process implements Module {
     // ===== Create target content textarea
     $targetLangContent = $this->modules->get('InputfieldTextarea');
     $targetLangContent->name = "fluency_translate_target_content";
-    $targetLangContent->label = __('Translated Text:');
+    $targetLangContent->label = $translationToolUiText->fieldLabelTranslatedText;
     $targetLangContent->columnWidth = 50;
     $targetLangContent->collapsed = Inputfield::collapsedNever;
     $targetLangContent->themeInputSize = 's';
@@ -433,7 +445,7 @@ class Fluency extends Process implements Module {
     // $translateButton->label = 'wat';
     $translateButton->addClass('fluency-translate-button');
     $translateButton->addClass('js-fluency-translate');
-    $translateButton->text = 'Translate';
+    $translateButton->text = $translationToolUiText->buttonTranslate;
     $translateButton->attr('icon','chevron-circle-right');
     $fieldset->append($translateButton);
 
