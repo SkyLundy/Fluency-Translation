@@ -234,7 +234,7 @@ Fluency.MultilanguageFields = (function() {
     triggerEl.setAttribute('href', '#0')
     triggerEl.setAttribute('class', 'fluency-translate-trigger')
     triggerEl.setAttribute('data-fluency-target-language', targetLanguage.deeplCode)
-    triggerEl.textContent = translateTriggerText
+    triggerEl.textContent = uiText.translateTrigger
     // triggerEl.textContent = "Translate from English"
 
     // Bind the event listener to trigger translation for this field.
@@ -488,7 +488,7 @@ Fluency.PageNameFields = (function() {
       // Set message for incompatible fields
       // Set message for fields that are not configured
       if(targetLanguage && disabledLanguages.includes(targetLanguage.deeplCode)) {
-        _addTranslationLabelToField(thisContainer, uiText.pageNameNotAvailable)
+        _addTranslationLabelToField(thisContainer, uiText.pageNameTranslationNotAvailable)
         continue
       } else if (!targetLanguage) {
         _addTranslationLabelToField(thisContainer, uiText.translationNotAvailable)

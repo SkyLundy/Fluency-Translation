@@ -457,8 +457,8 @@ class Fluency extends Process implements Module {
     ///////////////
     $fieldset = $this->modules->get('InputfieldFieldset');
     $fieldset->name = 'fieldset_fluency_api_usage';
-    $fieldset->label = __('Translation Service Usage Information');
-    $fieldset->description = __('Click the Refresh button to get translation service usage information');
+    $fieldset->label = $translationToolUiText->serviceUsageTitle;
+    $fieldset->description = $translationToolUiText->serviceUsageDescription;
     $fieldset->addClass('fluency-api-usage-fieldset');
     $fieldset->addClass('fluency-overlay-container');
     $fieldset->collapsed = true;
@@ -470,10 +470,10 @@ class Fluency extends Process implements Module {
     $usageTable->sortable = false;
     $usageTable->action(['Refresh' => '#']);
     $usageTable->headerRow([
-      __('Character Limit'),
-      __('Characters Translated'),
-      __('Characters Available'),
-      __('Total Usage')
+      $translationToolUiText->usageTableCharacterTitle,
+      $translationToolUiText->usageTableTranslatedTitle,
+      $translationToolUiText->usageTableAvailableTitle,
+      $translationToolUiText->usageTableTotalTitle
     ]);
 
     // Initialize this table with zeroes
@@ -488,7 +488,6 @@ class Fluency extends Process implements Module {
     // Create field for markup
     $field = $this->modules->get('InputfieldMarkup');
     $field->collapsed = Inputfield::collapsedNever;
-    // $field->label = __('Usage Details');
     $field->skipLable = Inputfield::skipLabelHeader;
     $field->value = $usageTable->render();
     $fieldset->append($field);
