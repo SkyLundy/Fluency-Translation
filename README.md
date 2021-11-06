@@ -47,11 +47,11 @@ The Fluency module is a ProcessWire interface for bringing DeepL translation to 
 
 ```php
 $fluency->translate(
-  string $sourceLanguageCode,
-  string|array $contentToTranslate,
-  string $targetLanguageCode,
-  array $additionalParameters,
-  array $ignoredStrings
+  string $sourceLanguageCode, // Language translating from in ISO 639-1 format
+  string|array $contentToTranslate, // String or array of strings to translate
+  string $targetLanguageCode, // Language translating to in ISO 639-1 format
+  ?array $addApiParams, // Additional DeepL API parameters (Refer to DeepL API docs)
+  ?array $ignoredStrings // Substrings within content that should not be translated
 );
 ```
 

@@ -207,7 +207,7 @@ class Fluency extends Process implements Module {
    * @param  string       $sourceLangCode  2 letter language shortcode translating from
    * @param  string|array $content         Can be a string or an array of strings
    * @param  string       $targetLangCode  2 letter language shortcode translating to
-   * @param  array        $addParams       Additional DeepL API parameters
+   * @param  array        $addApiParams       Additional DeepL API parameters
    * @param  array        $ignoredStrings  Strings to not translate (Merged with CMS config'd strings)
    * @return object                        Fluency  module response object
    */
@@ -215,7 +215,7 @@ class Fluency extends Process implements Module {
     string $sourceLangCode,
     $content,
     string $targetLangCode,
-    array  $addParams = [],
+    array  $addApiParams = [],
     ?array $ignoredStrings = []
   ): object {
     // Get configured non-translated strings and merge with passed array
@@ -228,7 +228,7 @@ class Fluency extends Process implements Module {
     // Configure additional parameters
     $parameters = array_merge([
       'preserve_formatting' => $this->api_param_preserve_formatting
-    ], $addParams);
+    ], $addApiParams);
 
     // Translate and get value
     $result = $this->deepL->translate(
@@ -280,7 +280,6 @@ class Fluency extends Process implements Module {
         ];
         break;
       case 'translate':
-
         $returnData = $this->translate(
           urldecode($postData->sourceLanguage),
           urldecode($postData->content),

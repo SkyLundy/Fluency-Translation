@@ -255,6 +255,10 @@ class DeepL {
       }, $content);
     }
 
+    // Ensure ISO 639-1 language code is uppercase
+    $sourceLanguage = strtoupper($sourceLanguage);
+    $targetLanguage = strtoupper($targetLanguage);
+
     $request = array_merge($addParams, [
      'source_lang' => $sourceLanguage,
      'target_lang' => $targetLanguage,
