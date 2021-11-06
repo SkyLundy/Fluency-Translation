@@ -182,7 +182,6 @@ class DeepL {
     $output['data'] = $data;
     $output['httpCode'] = $httpResponseCode;
 
-
     return (object) $output;
   }
 

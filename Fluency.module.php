@@ -269,9 +269,10 @@ class Fluency extends Process implements Module {
   public function ___executeData(): ?string {
     if (!$this->config->ajax) return null;
 
+    $postData = $this->input->post
     $returnData = [];
 
-    switch ($this->input->post->req) {
+    switch ($postData->req) {
       case 'getBootData':
         $returnData = (object) [
           'data' => $this->getClientBootData(),
@@ -279,12 +280,13 @@ class Fluency extends Process implements Module {
         ];
         break;
       case 'translate':
+
         $returnData = $this->translate(
-          urldecode($this->input->post->sourceLanguage),
-          urldecode($this->input->post->content),
-          urldecode($this->input->post->targetLanguage),
+          urldecode($postData->sourceLanguage),
+          urldecode($postData->content),
+          urldecode($postData->targetLanguage),
           [],
-          $this->input->ignoredStrings ?? []
+          $postData->ignoredStrings ?? []
         );
         break;
       case 'usage':
