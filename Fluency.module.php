@@ -269,7 +269,7 @@ class Fluency extends Process implements Module {
   public function ___executeData(): ?string {
     if (!$this->config->ajax) return null;
 
-    $postData = $this->input->post
+    $postData = $this->input->post;
     $returnData = [];
 
     switch ($postData->req) {

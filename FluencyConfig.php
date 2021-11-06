@@ -41,20 +41,17 @@ class FluencyConfig extends ModuleConfig {
     $fluencyTools = new FluencyTools;
     $fluencyModule = $this->modules->get('Fluency');
     $moduleConfig = $this->modules->getModuleConfigData('Fluency');
-    $deeplSourceLanguages = null;
-    $deeplTargetLanguages = null;
+    $deeplSourceLanguages = [];
+    $deeplTargetLanguages = [];
     $deeplApiUsage = null;
-    $apiKeyIsValid = false;
+    $apiKeyIsValid = null;
     $deepL = null;
     $apiKeyCheckMessage = null;
     $apiHttpResponse = null;
 
     ///////////////////////////////
     // API key check & API calls //
-    //////////////////////////////
-    // Check if there's an api key
-    // Use an API usage call as a key test
-    // If successful, set data variables used below
+    ///////////////////////////////
     if ($fluencyModule->deepl_api_key) {
       // Instantiate a new DeepL class instance to access the API
       $deepL = new DeepL([
@@ -62,22 +59,33 @@ class FluencyConfig extends ModuleConfig {
         'accountType' => $fluencyModule->deepl_account_type
       ]);
 
-      // Use API usage as key test
       $request = $deepL->getApiUsage();
-      $apiHttpResponse = $request->httpCode;
 
-      // Check API response code for unauthorize failure and set variable if
       // API key is good
-      if ($apiHttpResponse !== 403) {
+      if ($request->httpCode !== 403) {
         $apiKeyIsValid = true;
         $deeplApiUsage = $request->data;
-        // Source/target languages are differentiated to accurately identify
-        // what is available via the DeepL API as it may change when it is
-        // updated or upgraded at a alter date.
+        // Get all source/target langs. This ensures that Fluency always has
+        // all of DeepL's languages available
         $deeplSourceLanguages = $deepL->getLanguageList('source')->data;
         $deeplTargetLanguages = $deepL->getLanguageList('target')->data;
-      } else {
-        $apiKeyCheckMessage = $request->message;
+
+
+        // Sort source Languages
+        usort($deeplSourceLanguages, function($a, $b) {
+          return strcmp($a->name, $b->name);
+        });
+
+
+        // Sort target Languages
+        usort($deeplTargetLanguages, function($a, $b) {
+          return strcmp($a->name, $b->name);
+        });
+      }
+
+      if ($request->httpCode === 403) {
+        $apiKeyIsValid = false;
+        $apiKeyCheckMessage = 'Authorization failed. Please supply a valid API key.';
       }
 
       $moduleConfig['api_key_valid'] = $apiKeyIsValid;
@@ -300,63 +308,44 @@ class FluencyConfig extends ModuleConfig {
 
     $userLanguage = $this->user->language->name;
 
-    // All language names that exist in ProcessWire
-    $pwLanguageNames = [];
-
-    // Put 'em all in an array
-    foreach ($this->languages as $language) {
-      $pwLanguageNames[] = $language->getLanguageValue('default', 'name');
-    }
-
     ///////////////////////////
     // Language Associations //
     ///////////////////////////
+
+
     // Set up a language association for all languages present in PW
-    // This will also assign a null value when new languages are found that
-    // are not in the language associations value
-    if (gettype($deeplTargetLanguages) == 'array' && count($deeplTargetLanguages)) {
+    if (count($deeplTargetLanguages)) {
+      // Loop through PW languages
       foreach ($this->languages as $language) {
         // Get information from languages configured in ProcessWire
         $pwLanguageName = $language->getLanguageValue($userLanguage, 'name');
         $pwLanguageTitle = $language->getLanguageValue($userLanguage, 'title');
-        $languageId = $language->id;
 
         // Create language select field
         $langSelectField = $this->modules->get('InputfieldSelect');
-        $langSelectField->name = "pw_language_{$languageId}";
+        $langSelectField->name = "pw_language_{$language->id}";
+        $isDefaultLanguage = $pwLanguageName === 'default';
 
-        // If this is the default language, build the options in the select
-        // from the source languages.
-        // Otherwise build the list from the destination languages
-        if ($pwLanguageName === 'default') {
-          $langSelectField->label = __('ProcessWire Default Language: ') .
-                                    "{$pwLanguageTitle}";
+        // Create PW default language association
+        if ($isDefaultLanguage) {
+          $langSelectField->label = __('ProcessWire Default Language: ') . "{$pwLanguageTitle}";
           $langSelectField->description = __('Translations will be made from this language into associated languages below.');
           $langSelectField->notes = __('This language must be listed in the source languages above.');
           $langSelectField->required = true;
+          $languageOptions = $deeplSourceLanguages;
+        }
 
-          // Add each DeepL source language to the select field
-          foreach ($deeplSourceLanguages as $lang) {
-            $langSelectField->addOption($lang->language, $lang->name);
-          }
-        } else {
-          // Create the language select to choose what language should be associated
-          // with languages that exist in the CMS
+        // Create other PW language associations.
+        if (!$isDefaultLanguage) {
           $langSelectField->label = __("ProcessWire Language: ") . $pwLanguageTitle;
           $langSelectField->description = __("DeepL language to associate with ") . $pwLanguageTitle;
           $langSelectField->columnWidth = 50;
+          $languageOptions = $deeplTargetLanguages;
+        }
 
-          $sortedTargetLanguages = $deeplTargetLanguages;
-
-          // Sort Target Languages
-          usort($sortedTargetLanguages, function($a, $b) {
-            return strcmp($a->name, $b->name);
-          });
-
-          // Add each DeepL dest language to the select field
-          foreach ($sortedTargetLanguages as $lang) {
-            $langSelectField->addOption($lang->language, $lang->name);
-          }
+        // Add each language option to the select field
+        foreach ($languageOptions as $lang) {
+          $langSelectField->addOption($lang->language, $lang->name);
         }
 
         $fieldset->append($langSelectField);
