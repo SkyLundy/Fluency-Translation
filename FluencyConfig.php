@@ -297,20 +297,16 @@ class FluencyConfig extends ModuleConfig {
 
     $inputfields->add($fieldset);
 
-    /////////////////////////////
-    // Language Configurations //
-    /////////////////////////////
+    ///////////////////////////
+    // Language Associations //
+    ///////////////////////////
+
     // ===== Create fieldset
     $fieldset = $this->modules->get('InputfieldFieldset');
     $fieldset->name = 'fieldgroup_language_associations';
     $fieldset->label = __('Language Translation Associations');
-    $fieldset->description = __('Select a DeepL translation language that matches languages configured in ProcessWire');
 
     $userLanguage = $this->user->language->name;
-
-    ///////////////////////////
-    // Language Associations //
-    ///////////////////////////
 
 
     // Set up a language association for all languages present in PW
@@ -320,10 +316,15 @@ class FluencyConfig extends ModuleConfig {
         // Get information from languages configured in ProcessWire
         $pwLanguageName = $language->getLanguageValue($userLanguage, 'name');
         $pwLanguageTitle = $language->getLanguageValue($userLanguage, 'title');
+        $langSelectFieldName =  "pw_language_{$language->id}";
+
 
         // Create language select field
         $langSelectField = $this->modules->get('InputfieldSelect');
-        $langSelectField->name = "pw_language_{$language->id}";
+        $langSelectField->name = $langSelectFieldName;
+        $langSelectField->themeBorder = 'hide';
+        $langSelectField->collapsed = Inputfield::collapsedNever;
+
         $isDefaultLanguage = $pwLanguageName === 'default';
 
         // Create PW default language association
@@ -332,23 +333,39 @@ class FluencyConfig extends ModuleConfig {
           $langSelectField->description = __('Translations will be made from this language into associated languages below.');
           $langSelectField->notes = __('This language must be listed in the source languages above.');
           $langSelectField->required = true;
-          $languageOptions = $deeplSourceLanguages;
+          // Add each language option to the select field
+          // We store all of the data for each language as the value. Allows for
+          // referencing all of the data later when needed
+          foreach ($deeplSourceLanguages as $lang) {
+            $langSelectField->addOption(json_encode($lang), $lang->name);
+          }
+
+          $fieldset->append($langSelectField);
         }
 
         // Create other PW language associations.
         if (!$isDefaultLanguage) {
-          $langSelectField->label = __("ProcessWire Language: ") . $pwLanguageTitle;
+          $childFieldset = $this->modules->get('InputfieldFieldset');
+          $childFieldset->name = "pw_language_{$language->id}_fieldset";
+          $childFieldset->label = __("ProcessWire Language: ") . $pwLanguageTitle;
+          $childFieldset->columnWidth = 50;
+          $childFieldset->themeBorder = 'hide';
+          $childFieldset->collapsed = Inputfield::collapsedNever;
+
+          $langSelectField->skipLabel = Inputfield::skipLabelHeader;
           $langSelectField->description = __("DeepL language to associate with ") . $pwLanguageTitle;
-          $langSelectField->columnWidth = 50;
-          $languageOptions = $deeplTargetLanguages;
-        }
 
-        // Add each language option to the select field
-        foreach ($languageOptions as $lang) {
-          $langSelectField->addOption($lang->language, $lang->name);
-        }
+          // Add each language option to the select field
+          // We store all of the data for each language as the value. Allows for
+          // referencing all of the data later when needed
+          foreach ($deeplTargetLanguages as $lang) {
+            $langSelectField->addOption(json_encode($lang), $lang->name);
+          }
 
-        $fieldset->append($langSelectField);
+          $childFieldset->append($langSelectField);
+
+          $fieldset->append($childFieldset);
+        }
       }
 
     }
