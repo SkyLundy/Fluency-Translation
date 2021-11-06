@@ -27,7 +27,7 @@ Best of all, you don't have to modify the way you build out your ProcessWire sit
 Fluency is free to use. There is no cost for this module and it can be used on any site that you build with ProcessWire.
 
 ## DeepL Account
-To use Fluency you must have a Developer account with DeepL. The Developer account provides access to their REST API which is used to power Fluency. DeepL has two account types which are Free and Pro and both can be used with Fluency.
+To use Fluency you must have a Developer account with DeepL. The Developer account provides access to their REST API which is used to power Fluency. DeepL has two account types which are Free and Pro, both of which can be used with Fluency.
 
 To learn more about DeepL Developer accounts and sign up, [click here to find out more](https://www.deepl.com/pro#developer).
 
@@ -49,7 +49,8 @@ The Fluency module is a ProcessWire interface for bringing DeepL translation to 
 $fluency->translate(
   string $sourceLanguageCode,
   string|array $contentToTranslate,
-  array $additionalApiParameters,
+  string $targetLanguageCode,
+  array $additionalParameters,
   array $ignoredStrings
 );
 ```
@@ -68,8 +69,8 @@ $result = $fluency->translate('EN', 'Hello!', 'ES');
 echo $result->data->translations[0]->text;
 ```
 
-### Using the DeepL class directly
-This does not use any configurations in the ProcessWire configuration screen and requires that you provide your DeepL API key as well as any API parameters. This does not require any permissions to use.
+### Calling the DeepL class directly
+This does not use any configurations in the ProcessWire configuration screen and requires that you provide your DeepL API key as well as any API parameters. Since this bypasses ProcessWire altogether the Fluency user permissions do not apply.
 
 ```php
 // Namespaced under ProcessWire
@@ -97,9 +98,8 @@ $result = $deepl->translate(
   ]
 );
 
-// An array was passed, so the result is iterable
 foreach ($result->data->translations as $translation) {
-  echo $translation . '<br>';
+  echo "{$translation}<br>";
 }
 ```
 

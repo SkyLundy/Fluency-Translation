@@ -12,7 +12,7 @@
 - Removed hard coding of module path in FluencyTools that would cause errors
   loading/rendering markup for the general translation tool.
 - Translation triggers no longer render for locked fields.
--
+- Updated README.md for clarity and with additional instructions
 
 ## 0.3.2 2021-07-03
 ### Bugfixes, enhancement
