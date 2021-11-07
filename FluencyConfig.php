@@ -303,6 +303,8 @@ class FluencyConfig extends ModuleConfig {
     $field->description = __('Add strings here that when present in content should not be translated. This is useful for things like brand names. For example, if the name of a company is Red Rock Mountain Climbing and it should always appear that way, then adding that string here will prevent it from being translated globally.');
     $field->notes = __('Provide multiple strings as comma separated values, values are case insensitive');
     $field->columnWidth = 50;
+    $field->collapsed = Inputfield::collapsedNever;
+    $field->themeBorder = 'hide';
     $fieldset->add($field);
 
     // Preserve Formatting Option
@@ -313,6 +315,8 @@ class FluencyConfig extends ModuleConfig {
     $field->notes = __('DeepL API parameter: preserve_formatting');
     $field->required = true;
     $field->columnWidth = 50;
+    $field->collapsed = Inputfield::collapsedNever;
+    $field->themeBorder = 'hide';
     $field->addOption(1, 'Yes (Recommended)');
     $field->addOption(0, 'No (DeepL default)');
     $fieldset->add($field);
