@@ -133,7 +133,7 @@ class Fluency extends Process implements Module {
       // We only want to return languages that have been configured
       if (!$deeplLanguageData) continue;
 
-      $deeplLanguageData = json_decode($deeplLanguageData);
+      $deeplLanguageData = (object) json_decode($deeplLanguageData);
       $isDefaultLanguage = $language->name === 'default';
 
       // Set source language data
@@ -152,20 +152,19 @@ class Fluency extends Process implements Module {
             'name' => $pwLanguageName,
             'title' => $languageTitle,
           ],
-          'deepL' => (object) $deeplLanguageData
+          'deepL' => $deeplLanguageData
         ];
       }
 
       // Set target language data
       if (!$isDefaultLanguage) {
-        // Set target languages data
         $languageData['target'][] = (object) [
           'processWire' => [
             'id' => $pwLanguageId,
             'name' => $pwLanguageName,
             'title' => $language->title,
           ],
-          'deepL' => (object) $deeplLanguageData
+          'deepL' => $deeplLanguageData
         ];
       }
     }
