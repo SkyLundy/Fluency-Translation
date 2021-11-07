@@ -203,9 +203,6 @@ class FluencyConfig extends ModuleConfig {
      * source languages that can be translated from and languages that can be
      * translated to. They are pulled from the API so are always the latest
      * available.
-     *
-     * The two markup fields will be added to fieldset after both have been
-     * created.
      */
 
     $itemTpl =<<<EOT
@@ -289,8 +286,7 @@ class FluencyConfig extends ModuleConfig {
     /////////////////////////
     // Translation Options //
     /////////////////////////
-
-    // ===== Create fieldset
+    // Create fieldset
     $fieldset = $this->modules->get('InputfieldFieldset');
     $fieldset->name = 'fieldgroup_translation_options';
     $fieldset->label = __('Translation Options');
