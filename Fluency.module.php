@@ -119,50 +119,53 @@ class Fluency extends Process implements Module {
    * @return object Each langauge with associated data
    */
   private function getConfiguredLanguageData(): object {
-    $languageData = [
-      'source' => [],
-      'target' => []
-    ];
-
-    $languageTitle = '';
+    $languageData = [];
 
     // Iterate through all languages and package for front end consumption
     foreach ($this->languages as $language) {
-      $languageId = $language->id;
-      $languageName = $language->name;
-      // Get the module configuration association variable and then pull the
-      // DeepL code
-      $configVar = "pw_language_{$languageId}";
-      $languageDeeplCode = $this->$configVar;
-      // We only want to return languages that have been configured
-      if (!$languageDeeplCode) continue;
+      $pwLanguageId = $language->id;
+      $pwLanguageName = $language->name;
 
-      // We want to get the proper name for labeling the input translation trigger
-      if ($language->name === "default") {
-        // Set source language data
-        $userLang = $this->user->language;
+      // Pull the DeepL data configured for this language
+      $configVar = "pw_language_{$pwLanguageId}";
+      $deeplLanguageData = $this->$configVar;
+
+      // We only want to return languages that have been configured
+      if (!$deeplLanguageData) continue;
+
+      $deeplLanguageData = json_decode($deeplLanguageData);
+      $isDefaultLanguage = $language->name === 'default';
+
+      // Set source language data
+      if ($isDefaultLanguage) {
         $languageTitle = $language->title;
 
-        // Check that this is a LanguagesPageFieldValue object before calling
-        // this method. $language->title returns different objects depending on
-        // context.
-        if (gettype($languageTitle) !== 'string') {
-          $languageTitle = $language->title->getLanguageValue($userLang->name);
+        // Check if this is a LanguagesPageFieldValue object.
+        // $language->title returns different objects depending on context.
+        if (!is_string($languageTitle)) {
+          $languageTitle = $language->title->getLanguageValue($this->user->language);
         }
 
-        $languageData['source']['id'] = $languageId;
-        $languageData['source']['name'] = $languageName;
-        $languageData['source']['title'] = $languageTitle;
-        $languageData['source']['deeplCode'] = $languageDeeplCode;
+        $languageData['source'] = (object) [
+          'processWire' => (object) [
+            'id' => $pwLanguageId,
+            'name' => $pwLanguageName,
+            'title' => $languageTitle,
+          ],
+          'deepL' => (object) $deeplLanguageData
+        ];
+      }
 
-        $languageData['source'] = (object) $languageData['source'];
-      } else {
+      // Set target language data
+      if (!$isDefaultLanguage) {
         // Set target languages data
         $languageData['target'][] = (object) [
-          'id' => $languageId,
-          'name' => $languageName,
-          'title' => $language->title,
-          'deeplCode' => $languageDeeplCode
+          'processWire' => [
+            'id' => $pwLanguageId,
+            'name' => $pwLanguageName,
+            'title' => $language->title,
+          ],
+          'deepL' => (object) $deeplLanguageData
         ];
       }
     }
@@ -194,7 +197,6 @@ class Fluency extends Process implements Module {
   private function getClientBootData(): object {
     return (object) [
       'languages' => $this->getConfiguredLanguageData(),
-      'pageName' => $this->page->name,
       'ui' => (object) [
         'text' => $this->getLocalizations()->clientRendered
       ]

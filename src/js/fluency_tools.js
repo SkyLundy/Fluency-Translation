@@ -50,6 +50,8 @@ Fluency.Tools = (function() {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
 
     xhr.onload = function() {
+      console.log(xhr.response)
+      return false
       callback(null, JSON.parse(xhr.response))
     }
 
