@@ -208,6 +208,15 @@ class FluencyConfig extends ModuleConfig {
      * created.
      */
 
+    $itemTpl =<<<EOT
+                <tr>
+                  <td style="text-align:right;">%{ITEM_NUMBER}</td>
+                  <td style="padding: 0 .25rem;text-align:right;">%{ISO_CODE}</td>
+                  <td style="padding: 0 .15rem">&middot;</td>
+                  <td style="padding: 0 .3rem;">%{NAME}</td>
+                </tr>
+               EOT;
+
     ////////////////////////////////
     // Available source languages //
     ////////////////////////////////
@@ -215,11 +224,17 @@ class FluencyConfig extends ModuleConfig {
     // Create markup for field
     $items = '';
 
-    foreach ($deeplSourceLanguages as $lang) {
-      $items .= "<li>{$lang->language} - {$lang->name}</li>";
+    for ($i=0; $i < count($deeplSourceLanguages); $i++) {
+      $lang = $deeplSourceLanguages[$i];
+
+      $items .= strtr($itemTpl, [
+        '%{ITEM_NUMBER}' =>  $i + 1 . '.',
+        '%{ISO_CODE}' =>  $lang->language,
+        '%{NAME}' =>  $lang->name,
+      ]);
     }
 
-    $fieldValue = "<ol>{$items}</ol>";
+    $fieldValue = "<table>{$items}</table>";
 
     // Create field and add markup
     $sourceLangMarkupField = $this->modules->get('InputfieldMarkup');
@@ -227,27 +242,34 @@ class FluencyConfig extends ModuleConfig {
     $sourceLangMarkupField->notes = __('The language of the content you are translating from must be listed here.');
     $sourceLangMarkupField->value = $fieldValue;
     $sourceLangMarkupField->columnWidth = 50;
+    $sourceLangMarkupField->collapsed = Inputfield::collapsedNever;
+    $sourceLangMarkupField->themeBorder = 'hide';
     // Added to fieldset below
 
     ////////////////////////////////
     // Available target languages //
     ////////////////////////////////
-    // This creates an <ol> list of languages that can be translated *to*
-
-    // Create markup for field
     $items = '';
 
-    foreach ($deeplTargetLanguages as $lang) {
-      $items .= "<li>{$lang->language} - {$lang->name}</li>";
+    for ($i=0; $i < count($deeplTargetLanguages); $i++) {
+      $lang = $deeplTargetLanguages[$i];
+
+      $items .= strtr($itemTpl, [
+        '%{ITEM_NUMBER}' =>  $i + 1 . '.',
+        '%{ISO_CODE}' =>  $lang->language,
+        '%{NAME}' =>  $lang->name,
+      ]);
     }
 
-    $fieldValue = "<ol>{$items}</ol>";
+    $fieldValue = "<table>{$items}</table>";
 
     // Create field and add markup
     $targetLangMarkupField = $this->modules->get('InputfieldMarkup');
     $targetLangMarkupField->label = __('Destination Languages');
     $targetLangMarkupField->columnWidth = 50;
     $targetLangMarkupField->value = $fieldValue;
+    $targetLangMarkupField->collapsed = Inputfield::collapsedNever;
+    $targetLangMarkupField->themeBorder = 'hide';
     // Added to fieldset below
 
     /////////////////////////////////////

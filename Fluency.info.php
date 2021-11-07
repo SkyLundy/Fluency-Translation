@@ -7,7 +7,7 @@ $info = [
   'version' => '032',
   'href' => 'https://github.com/SkyLundy/Fluency-Translation.git',
   'icon' => 'language',
-  'summary' => __("Translation service integration module that uses the DeepL machine learning langauge translation API."),
+  'summary' => "Translation service integration module that uses the DeepL machine learning langauge translation API.",
   'autoload' => true,
   'singular' => true,
   'requires' => [
@@ -20,6 +20,6 @@ $info = [
   ],
   'page' => [
     'name' => 'fluency',
-    'title' => __('XTranslation')
+    'title' => __('Translation')
   ]
 ];
