@@ -43,6 +43,16 @@ class Fluency extends Process implements Module {
   private $fluencyConfig;
 
   /**
+   * Languages that cannot be used for translating page names (URLs)
+   * @var array
+   */
+  private $urlInvalidLanguages = [
+    'RU',
+    'JA',
+    'ZH'
+  ];
+
+  /**
    * Executes module when PW is ready
    * @return void
    */
@@ -158,11 +168,14 @@ class Fluency extends Process implements Module {
 
       // Set target language data
       if (!$isDefaultLanguage) {
+        $urlValid = !in_array($translatorLangConfigData->language, $this->urlInvalidLanguages);
+
         $languageData['target'][] = (object) [
           'processWire' => [
             'id' => $pwLanguageId,
             'name' => $pwLanguageName,
             'title' => $language->title,
+            'urlValid' => $urlValid
           ],
           'translator' => $translatorLangConfigData
         ];

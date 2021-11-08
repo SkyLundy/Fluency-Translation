@@ -400,18 +400,6 @@ Fluency.PageNameFields = (function() {
   var targetLanguages = []
 
   /**
-   * Page name fields are not compatible with Chines, Japanese, or Russian
-   * language characters and produce upredictable results. These languages will
-   * not receive translation triggers.
-   * @type {Array}
-   */
-  var disabledLanguages = [
-    'RU',
-    'JA',
-    'ZH'
-  ]
-
-  /**
    * Holds the UI text returned from the module
    * @type {Object}
    */
@@ -486,11 +474,13 @@ Fluency.PageNameFields = (function() {
                        )
 
       // Set message for incompatible fields
-      // Set message for fields that are not configured
-      if (targetLanguage && disabledLanguages.includes(targetLanguage.translator.language)) {
+      if (targetLanguage && !targetLanguage.processWire.urlValid) {
         _addTranslationLabelToField(thisContainer, uiText.pageNameTranslationNotAvailable)
         continue
-      } else if (!targetLanguage) {
+      }
+
+      // Set message for fields that are not configured
+      if (!targetLanguage) {
         _addTranslationLabelToField(thisContainer, uiText.translationNotAvailable)
         continue
       }
