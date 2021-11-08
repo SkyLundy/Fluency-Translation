@@ -305,13 +305,9 @@ class Fluency extends Process implements Module {
    * @return string
    */
   public function currentLanguageIsoCode(): string {
-    $user = $this->user;
-    $userLanguage = $user->language->id;
-    $configuredLanguageData = $this->getConfiguredLanguageData();
+    $userLanguageId = $this->user->language->id;
 
-    // Need to get current page ID and http URL for language
-
-    return $this->page->title;
+    return $this->getLanguageIdIsoAssociations()[$userLanguageId] ?? null;
   }
 
   /**
@@ -324,14 +320,6 @@ class Fluency extends Process implements Module {
     $metaTagTemplate = $this->fluencyTools->getMarkup('page_language_meta_tag.tpl.html');
     $isoCodesById = $this->getLanguageIdIsoAssociations();
     $allTags = [];
-
-    // // Add id/iso code for source language
-    // $isoCodesById[$sourceLanguage->processWire->id] = $sourceLanguage->translator->language;
-
-    // // Add id/iso codes for source languages
-    // foreach ($configuredLanguages->target as $targetLanguage) {
-    //   $isoCodesById[$targetLanguage->processWire->id] = $targetLanguage->translator->language;
-    // }
 
     foreach ($this->languages as $language) {
       if (isset($isoCodesById[$language->id])) {
