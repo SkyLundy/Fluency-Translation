@@ -171,7 +171,7 @@ class Fluency extends Process implements Module {
         $urlValid = !in_array($translatorLangConfigData->language, $this->urlInvalidLanguages);
 
         $languageData['target'][] = (object) [
-          'processWire' => [
+          'processWire' => (object) [
             'id' => $pwLanguageId,
             'name' => $pwLanguageName,
             'title' => $language->title,
@@ -199,6 +199,33 @@ class Fluency extends Process implements Module {
       'translationTool' => $translationTool()
     ];
   }
+
+  /**
+   * Returns an array of PW language IDs and associated ISO codes
+   * @param  array $additions This allows for adding custom associations for languages
+   *                          not configured in Fluency
+   * @return array
+   */
+  private function getLanguageIdIsoAssociations(): array {
+    $configuredLanguages = $this->getConfiguredLanguageData();
+    $sourceLanguage = $configuredLanguages->source;
+    $targetLanguages = $configuredLanguages->target;
+    $isoCodesById = [];
+
+    // Add id/iso code for source language
+    $isoCodesById[$sourceLanguage->processWire->id] = $sourceLanguage->translator->language;
+
+    // Add id/iso codes for source languages
+    foreach ($configuredLanguages->target as $targetLanguage) {
+      $isoCodesById[$targetLanguage->processWire->id] = $targetLanguage->translator->language;
+    }
+
+    return $isoCodesById;
+  }
+
+  ////////////////////
+  // Module Actions //
+  ////////////////////
 
   /**
    * This returns a data payload needed by the client UI JS to add translation
@@ -261,7 +288,7 @@ class Fluency extends Process implements Module {
    * developer account
    * @return object
    */
-  public function getApiUsage(): object {
+  public function apiUsage(): object {
     return $this->deepL->getApiUsage();
   }
 
@@ -269,7 +296,7 @@ class Fluency extends Process implements Module {
    * Gets a list of languages that DeepL can translate from/to
    * @return object
    */
-  public function getLanguageList(): object {
+  public function languageList(): object {
     return $this->deepL->getLanguageList();
   }
 
@@ -279,11 +306,12 @@ class Fluency extends Process implements Module {
    */
   public function currentLanguageIsoCode(): string {
     $user = $this->user;
-    $userLanguage = $user->languages;
+    $userLanguage = $user->language->id;
     $configuredLanguageData = $this->getConfiguredLanguageData();
 
     // Need to get current page ID and http URL for language
 
+    return $this->page->title;
   }
 
   /**
@@ -292,13 +320,27 @@ class Fluency extends Process implements Module {
    * @return string
    */
   public function pageLanguageMetaTags(): string {
-    $user = $this->user;
-
     $pwLanguages = $this->languages;
-    $translationConfiguredLanguages = $this->getConfiguredLanguageData();
     $metaTagTemplate = $this->fluencyTools->getMarkup('page_language_meta_tag.tpl.html');
+    $isoCodesById = $this->getLanguageIdIsoAssociations();
     $allTags = [];
 
+    // // Add id/iso code for source language
+    // $isoCodesById[$sourceLanguage->processWire->id] = $sourceLanguage->translator->language;
+
+    // // Add id/iso codes for source languages
+    // foreach ($configuredLanguages->target as $targetLanguage) {
+    //   $isoCodesById[$targetLanguage->processWire->id] = $targetLanguage->translator->language;
+    // }
+
+    foreach ($this->languages as $language) {
+      if (isset($isoCodesById[$language->id])) {
+        $allTags[] = strtr($metaTagTemplate, [
+          '%{URL}' => $this->page->localHttpUrl($language),
+          '%{ISO_CODE}' => $isoCodesById[$language->id]
+        ]);
+      }
+    }
 
 
     return implode('', $allTags);
@@ -338,10 +380,16 @@ class Fluency extends Process implements Module {
         );
         break;
       case 'usage':
-        $returnData = $this->getApiUsage();
+        $returnData = $this->apiUsage();
         break;
       case 'languageList':
-        $returnData = $this->getLanguageList();
+        $returnData = $this->languageList();
+        break;
+      case 'currentLanguageIsoCode':
+        $returnData = $this->currentLanguageIsoCode();
+        break;
+      case 'pageLanguageMetaTags':
+        $returnData = $this->pageLanguageMetaTags();
         break;
       default:
         $returnData = (object) [
