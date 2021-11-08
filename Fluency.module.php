@@ -248,7 +248,7 @@ class Fluency extends Process implements Module {
    * @param  string       $sourceLangCode  2 letter language shortcode translating from
    * @param  string|array $content         Can be a string or an array of strings
    * @param  string       $targetLangCode  2 letter language shortcode translating to
-   * @param  array        $addApiParams       Additional DeepL API parameters
+   * @param  array        $addApiParams    Additional DeepL API parameters
    * @param  array        $ignoredStrings  Strings to not translate (Merged with CMS config'd strings)
    * @return object                        Fluency  module response object
    */
@@ -315,7 +315,7 @@ class Fluency extends Process implements Module {
    * page for SEO and standards compliance
    * @return string
    */
-  public function pageLanguageMetaTags(): string {
+  public function pageUrlLanguageMetaTags(): string {
     $pwLanguages = $this->languages;
     $metaTagTemplate = $this->fluencyTools->getMarkup('page_language_meta_tag.tpl.html');
     $isoCodesById = $this->getLanguageIdIsoAssociations();
@@ -376,8 +376,8 @@ class Fluency extends Process implements Module {
       case 'currentLanguageIsoCode':
         $returnData = $this->currentLanguageIsoCode();
         break;
-      case 'pageLanguageMetaTags':
-        $returnData = $this->pageLanguageMetaTags();
+      case 'pageUrlLanguageMetaTags':
+        $returnData = $this->pageUrlLanguageMetaTags();
         break;
       default:
         $returnData = (object) [
