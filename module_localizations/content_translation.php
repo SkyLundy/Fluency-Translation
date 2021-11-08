@@ -5,10 +5,13 @@
  * @param Fluency $fluency Fluency module object
  */
 return function(Fluency $fluency): object {
-  $configuredLangs = $fluency->getConfiguredLanguageData();
+  $sourceLangTitle = $fluency->getConfiguredLanguageData()
+                             ->source
+                             ->processWire
+                             ->title;
 
   return (object) [
-    'translateTrigger' => sprintf(__('Translate from %s'), $configuredLangs->source->title),
+    'translateTrigger' => sprintf(__('Translate from %s'), $sourceLangTitle),
     'translationAvailable' => __('Translation Service Available'),
     'translationNotAvailable' => __('Translation not available for this langauge'),
     'languageNotAvailable' => __('Translation not available for this language'),
