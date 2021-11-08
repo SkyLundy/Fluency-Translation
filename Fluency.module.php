@@ -126,14 +126,14 @@ class Fluency extends Process implements Module {
       $pwLanguageId = $language->id;
       $pwLanguageName = $language->name;
 
-      // Pull the DeepL data configured for this language
+      // Pull the translator data configured for this language
       $configVar = "pw_language_{$pwLanguageId}";
-      $deeplLanguageData = $this->$configVar;
+      $translatorLangConfigData = $this->$configVar;
 
       // We only want to return languages that have been configured
-      if (!$deeplLanguageData) continue;
+      if (!$translatorLangConfigData) continue;
 
-      $deeplLanguageData = (object) json_decode($deeplLanguageData);
+      $translatorLangConfigData = (object) json_decode($translatorLangConfigData);
       $isDefaultLanguage = $language->name === 'default';
 
       // Set source language data
@@ -152,7 +152,7 @@ class Fluency extends Process implements Module {
             'name' => $pwLanguageName,
             'title' => $languageTitle,
           ],
-          'deepL' => $deeplLanguageData
+          'translator' => $translatorLangConfigData
         ];
       }
 
@@ -164,7 +164,7 @@ class Fluency extends Process implements Module {
             'name' => $pwLanguageName,
             'title' => $language->title,
           ],
-          'deepL' => $deeplLanguageData
+          'translator' => $translatorLangConfigData
         ];
       }
     }
@@ -173,16 +173,16 @@ class Fluency extends Process implements Module {
   }
 
   /**
-   * Gets the text for various UI components
+   * Gets the text for rendering the UI
    * @return object
    */
   private function getLocalizations(): object {
     $localizationDir = __DIR__ . '/module_localizations/';
-    $clientRendered = require_once "{$localizationDir}/content_editing.php";
+    $contentTranslation = require_once "{$localizationDir}/content_translation.php";
     $translationTool = require_once "{$localizationDir}/translation_tool.php";
 
     return (object) [
-      'clientRendered' => $clientRendered($this),
+      'clientRendered' => $contentTranslation($this),
       'translationTool' => $translationTool()
     ];
   }
@@ -259,6 +259,41 @@ class Fluency extends Process implements Module {
   public function getLanguageList(): object {
     return $this->deepL->getLanguageList();
   }
+
+  /**
+   * Gets the current language ISO 639-1 code
+   * @return string
+   */
+  public function currentLanguageIsoCode(): string {
+    $user = $this->user;
+    $userLanguage = $user->languages;
+    $configuredLanguageData = $this->getConfiguredLanguageData();
+
+    // Need to get current page ID and http URL for language
+
+  }
+
+  /**
+   * Generates alt language meta tags to be rendered in the <head> element of the
+   * page for SEO and standards compliance
+   * @return string
+   */
+  public function pageLanguageMetaTags(): string {
+    $user = $this->user;
+
+    $pwLanguages = $this->languages;
+    $translationConfiguredLanguages = $this->getConfiguredLanguageData();
+    $metaTagTemplate = $this->fluencyTools->getMarkup('page_language_meta_tag.tpl.html');
+    $allTags = [];
+
+
+
+    return implode('', $allTags);
+  }
+
+  ///////////////////////////
+  // API Endpoint Handling //
+  ///////////////////////////
 
   /**
    * Handles AJAX requests to /{admin slug}/fluency/data

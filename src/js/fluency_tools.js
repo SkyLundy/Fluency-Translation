@@ -50,8 +50,6 @@ Fluency.Tools = (function() {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
 
     xhr.onload = function() {
-      console.log(xhr.response)
-      return false
       callback(null, JSON.parse(xhr.response))
     }
 
@@ -89,14 +87,19 @@ Fluency.Tools = (function() {
    *                         null if not found
    */
   var getTargetLanguageById = function(pwLanguageId, targetLanguages) {
-        // Filter array and pull language that matches provided ID
-    var targetLanguage = targetLanguages.find(function(targetLanguage) {
-      if (targetLanguage.id == pwLanguageId) {
-        return targetLanguage
-      }
-    })
+    var targetLanguage = null,
+        pwLanguageId = parseInt(pwLanguageId, 10)
 
-    return targetLanguage ? targetLanguage : null
+    for (var i = 0; i < targetLanguages.length; i++) {
+      var language = targetLanguages[i]
+
+      if (language.processWire.id === pwLanguageId) {
+        targetLanguage = language
+        break
+      }
+    }
+
+    return targetLanguage
   }
 
   /**

@@ -1,26 +1,27 @@
 # Fluency for ProcessWire Changelog
 
 ## 0.4.3
-### Bugfixes, enhancements
+### *Breaking Changes, Critical Update* Features added, Bugfixes, enhancements
 - IMPORTANT: This update requires that you re-associate the PW->DeepL languages
   in the module config due to a change in how the module stores DeepL data. This
   was done to allow for future per-language configurations. No content  will be
   lost or altered.
 - Module now specifies PHP 7.0 as minimum version.
 - Module config layout updated.
+- Return value of getConfiguredLanguageData restructured to organize language data
+  between ProcessWire configuration and DeepL data. See README.md for documentation.
 - Language selects in module config are now sorted alphabetically.
 - Fixed hard coded link for PayPal donate button image.
-
-- Translation trigger text is now configurable in module settings. Defaults to
-  "Translate from {PW default language name}". This allows for the use of trigger
-  text that is not English.
+- Translation UI text is now configurable in module settings. See README.md
+  for documentation on setting defaults and localization. The module can translate
+  itself.
 - The Translation page name/menu item is now translatable, enabling better module
   localization
-
 - Removed hard coding of module path in FluencyTools that would cause errors
   loading/rendering markup for the general translation tool.
 - Translation triggers no longer render for locked fields.
-- Updated README.md for clarity and with additional instructions
+- Good amount of code refactoring for clarity. Removed unused code left over from
+  initial development.
 
 ## 0.3.2 2021-07-03
 ### Bugfixes, enhancement

@@ -164,16 +164,16 @@ Fluency.MultilanguageFields = (function() {
                            targetLanguages
                          )
 
-      // If the PW language matches the source language, add available message
+    // If the PW language matches the source language, add available message
     // If the PW language matches the target language, add trigger
     // Else, add translation not available label
-    if (inputfieldLanguage == sourceLanguage.id) {
+    if (inputfieldLanguage == sourceLanguage.processWire.id) {
       _addTranslationLabelToField(
         inputfieldContainer,
         uiText.translationAvailable
         // 'Translation Service Available'
       )
-    } else if (targetLanguage && inputfieldLanguage == targetLanguage.id) {
+    } else if (targetLanguage && inputfieldLanguage == targetLanguage.processWire.id) {
       _addTranslationTriggerToField(inputfieldContainer)
     } else {
       _addTranslationLabelToField(
@@ -233,7 +233,7 @@ Fluency.MultilanguageFields = (function() {
     triggerEl = document.createElement('a')
     triggerEl.setAttribute('href', '#0')
     triggerEl.setAttribute('class', 'fluency-translate-trigger')
-    triggerEl.setAttribute('data-fluency-target-language', targetLanguage.deeplCode)
+    triggerEl.setAttribute('data-fluency-target-language', targetLanguage.translator.language)
     triggerEl.textContent = uiText.translateTrigger
     // triggerEl.textContent = "Translate from English"
 
@@ -257,7 +257,7 @@ Fluency.MultilanguageFields = (function() {
    * @return {void}
    */
   var _bindTranslationTrigger = function(targetInputTrigger, targetInputContainer) {
-    var langIdSelector = '[data-language="' + sourceLanguage.id + '"]',
+    var langIdSelector = '[data-language="' + sourceLanguage.processWire.id + '"]',
         // Get the associated field
         sourceInputContainer = targetInputContainer.parentElement
                                                    .querySelector(langIdSelector),
@@ -297,7 +297,7 @@ Fluency.MultilanguageFields = (function() {
       // Set ajax call, get value, insert into destination field
       Fluency.Tools.moduleRequest({
         req: 'translate',
-        sourceLanguage: sourceLanguage.deeplCode,
+        sourceLanguage: sourceLanguage.translator.language,
         targetLanguage: this.dataset.fluencyTargetLanguage,
         content: contentToTranslate
       }, function(err, response) {
@@ -487,7 +487,7 @@ Fluency.PageNameFields = (function() {
 
       // Set message for incompatible fields
       // Set message for fields that are not configured
-      if(targetLanguage && disabledLanguages.includes(targetLanguage.deeplCode)) {
+      if (targetLanguage && disabledLanguages.includes(targetLanguage.translator.language)) {
         _addTranslationLabelToField(thisContainer, uiText.pageNameTranslationNotAvailable)
         continue
       } else if (!targetLanguage) {
@@ -504,7 +504,7 @@ Fluency.PageNameFields = (function() {
       var triggerEl = document.createElement('a')
           triggerEl.setAttribute('href', '#0')
           triggerEl.setAttribute('class', 'fluency-translate-trigger')
-          triggerEl.setAttribute('data-fluency-target-language', targetLanguage.deeplCode)
+          triggerEl.setAttribute('data-fluency-target-language', targetLanguage.translator.language)
           triggerEl.textContent = uiText.translateTrigger
 
       _bindTranslationTrigger(triggerEl, targetInput)
@@ -534,7 +534,7 @@ Fluency.PageNameFields = (function() {
       // Set ajax call, get value, insert into destination field
       Fluency.Tools.moduleRequest({
         req: 'translate',
-        sourceLanguage: sourceLanguage.deeplCode,
+        sourceLanguage: sourceLanguage.translator.language,
         targetLanguage: triggerEl.getAttribute('data-fluency-target-language'),
         content: sourceValue
       }, function(err, response) {
