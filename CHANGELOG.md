@@ -7,6 +7,8 @@
   was done to allow for future per-language configurations. No content  will be
   lost or altered.
 - Module now specifies PHP 7.0 as minimum version.
+- New method that returns the current language ISO string, see README.md
+- New method that creates `<meta>` tag markup for alternate langauge URLs, see README.md
 - Module config layout updated.
 - Return value of getConfiguredLanguageData restructured to organize language data
   between ProcessWire configuration and DeepL data. See README.md for documentation.
@@ -20,7 +22,7 @@
 - Removed hard coding of module path in FluencyTools that would cause errors
   loading/rendering markup for the general translation tool.
 - Translation triggers no longer render for locked fields.
-- Good amount of code refactoring for clarity. Removed unused code left over from
+- Significant code refactoring for clarity. Removed unused code left over from
   initial development.
 
 ## 0.3.2 2021-07-03

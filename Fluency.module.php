@@ -315,7 +315,7 @@ class Fluency extends Process implements Module {
    * page for SEO and standards compliance
    * @return string
    */
-  public function pageUrlLanguageMetaTags(): string {
+  public function altLanguageMetaTags(): string {
     $pwLanguages = $this->languages;
     $metaTagTemplate = $this->fluencyTools->getMarkup('page_language_meta_tag.tpl.html');
     $isoCodesById = $this->getLanguageIdIsoAssociations();
@@ -376,8 +376,8 @@ class Fluency extends Process implements Module {
       case 'currentLanguageIsoCode':
         $returnData = $this->currentLanguageIsoCode();
         break;
-      case 'pageUrlLanguageMetaTags':
-        $returnData = $this->pageUrlLanguageMetaTags();
+      case 'altLanguageMetaTags':
+        $returnData = $this->altLanguageMetaTags();
         break;
       default:
         $returnData = (object) [

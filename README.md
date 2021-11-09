@@ -42,6 +42,13 @@ That's it! All multi-language fields should now have click to translate buttons 
 
 If no langauges are present in ProcessWire or if languages are present and not configured with Fluency, it is still possible to use the translator tool in the Admin menu as long as a valid API key is present and the current user is assigned a role with the `fluency-translate` permission.
 
+### Customizing/Translating UI Text
+All text for the Fluency UI elements can be customized. This is done through ProcessWire's language setup. In the Admin visit Setup->Languages, edit the 'default' language. Then click "Find Files To Translate".
+
+All UI related translation files will be located in the `module_localizations` folder in the Fluency plugin directory.
+
+By default the "Translate From" trigger for each field uses the title of the default language as it is configured in ProcessWire.
+
 ## Using Fluency & DeepL Programatically
 The Fluency module is a ProcessWire interface for bringing DeepL translation to the admin and content editing screens. There are two ways to access translation in your scsripts and templates. The `translate()` method for both is identical and is as follows:
 
@@ -58,59 +65,89 @@ $fluency->translate(
 ### Using the Fluency module
 This requires that your current user has the `fluency-translate` permission. This will use the API key from the ProcessWire configuration screen as well as the global ignored strings, preserve formatting, etc. It does not reference configured languages as those are defined manually when translating so all are available when using the module directly.
 
+#### Simple Example
+Translate one string to another language.
 ```php
-$fluency = $modules->get('Fluency');
+$fluency = $modules->get("Fluency");
 
 // Simple example, for more complex requests, including additional API parameters
 // see the DeepL class call below. Any additional configurations will be merged
 // with the module's configuration.
-$result = $fluency->translate('EN', 'Hello!', 'ES');
+$result = $fluency->translate("EN", "Hello!", "ES");
 
 echo $result->data->translations[0]->text;
 ```
 
-### Calling the DeepL class directly
-This does not use any configurations in the ProcessWire configuration screen and requires that you provide your DeepL API key as well as any API parameters. Since this bypasses ProcessWire altogether the Fluency user permissions do not apply.
-
+#### Full Example
+Here is a request that makes use of all of the Fluency translate method parameters
+and translates multiple separate strings at once:
 ```php
-// Namespaced under ProcessWire
-use DeepL;
+$fluency = $modules->get("Fluency");
 
-$deepl = new DeepL([
-  'apiKey' => 'your-deepl-api-key-here'
-  'accountType' => 'pro' // Options are 'pro' and 'free'
-]);
-
-// Here is an extended example
-$result = $deepl->translate(
-  'EN',
+$result = $fluency->translate(
+  "EN",
   [
-    'Hello my friend!',
-    'Goodbye, but not forever!!'
+    "Hello my friend!",
+    "Goodbye, but not forever!",
+    "Translate me, but not me!",
+    "Don't translate me. Translate me instead!"
   ],
-  'ES',
+  "ES",
   [
-    'preserve_formatting' => 1
+    "preserve_formatting" => 0
   ],
   [
-    'friend',
-    'forever'
+    "but not me!",
+    "Don't translate me."
   ]
 );
 
 foreach ($result->data->translations as $translation) {
-  echo "{$translation}<br>";
+  echo "{$translation->text}<br>";
 }
 ```
 
-Additional methods are available when calling either Fluency or DeepL directly.
+### Additional Methods
+Fluency includes tools to make working with translation and building a multi-language site easier, faster, and more standards/SEO compliant. The following methods are available:
 
-`getApiUsage()` - Gets the current API usage
-`getLanguageList()` - Gets all langauges DeepL translates from and to
+- `Fluency::apiUsage()` - This returns the current API usage
+- `Fluency::languageList()` - This gets all languages DeepL translates from and to.
+- `Fluency::currentLanguageIsoCode()` - This returns the current language ISO code as a string
+- `Fluency::altLanguageMetaTags()` - This returns a string of alternate language HTML meta tags. The ISO code is provided by DeepL, the URLs are as configured for each page in ProcessWire. See example below.
+
+Examples:
+Adding this to your document head markup:
+```php
+<?php namespace ProcessWire;
+$fluency = $modules->get('Fluency');
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $fluency->currentLanguageIsoCode(); ?>">
+  <head>
+    <title><php echo $page->title; ?></title>
+    <?php echo $fluency->altLanguageMetaTags(); ?>
+    <!-- continuing code ommitted... -->
+```
+
+Will output this (when the current language is German):
+```HTML
+<!DOCTYPE html>
+<html lang="DE">
+  <head>
+    <title>Über meine mehrsprachige Website</title>
+    <meta rel="alternate" hreflang="EN" href="https://fluency.com/about-my-website">
+    <meta rel="alternate" hreflang="DE" href="https://fluency.com/de/uber-meine-website">
+    <meta rel="alternate" hreflang="FR" href="https://fluency.com/fr/a-propos-de-mon-site-web">
+    <meta rel="alternate" hreflang="ES" href="https://fluency.com/es/sobre-mi-sitio-web">
+    <meta rel="alternate" hreflang="IT" href="https://fluency.com/it/sul-mio-sito-web">
+    <!-- continuing code ommitted... -->
+```
+
+## Extending Fluency Functionality
+A companion module has been made by a member of the ProcessWire community to translate whole pages at once. Read more and download here https://github.com/robertweiss/ProcessTranslatePage
 
 ## Limitations:
 - The browser plugin for Grammarly conflicts with Fluency. The immediate solution is to either disable Grammarly while using Fluency in the ProcessWire admin, or log into the admin in a private browser window where Grammarly may not be running.
-- No "translate page" - Translating multiple fields can be done by clicking multiple translation links on multiple fields at once but engineering a "one click page translate" is not feasible from a user experience standpoint. The time it takes to translate one field can be a second or two, but cumulatively that may take much longer (CKEditor fields are slower than plain text fields). This may have a workaround in the future but I wanted to eliminate the possibility that translating a whole page takes so long that the user things that it hanged and gets frustrated. Right now one click per language per field makes it easy, predictable, and prevents user frustration.
 - No "translate whole site" - Same thing goes for translating an entire website at once. It would be great, but it would be a very intense process and take a very long time. There may be a way to create some sort of dedicated site translation page that leverages a progress bar or chunks the work, but again the DeepL request to response time would likely create some issues and there are limitations to how many concurrent requests can be made, a number which isn't documented by DeepL. This may change in the future but it's not on the roadmap as of right now.
 - Inline CKEditor not supported - This is on the roadmap but unfortunately for now you have to use regular CKEditor configuration.
 - Alpha release - This module is an alpha release. All of my testing during development hasn't turned up any errors or problems, but those don't come out until more wide usage. I will be using this on a website I am building that will be launched in the next couple of weeks so it's going to get real-world usage pretty quickly.
