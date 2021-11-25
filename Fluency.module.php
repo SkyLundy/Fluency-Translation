@@ -305,9 +305,9 @@ class Fluency extends Process implements Module {
    * @return string
    */
   public function currentLanguageIsoCode(): string {
-    $userLanguageId = $this->user->language->id;
+    $currentLanguageId = $this->user->language->id;
 
-    return $this->getLanguageIdIsoAssociations()[$userLanguageId] ?? null;
+    return $this->getLanguageIdIsoAssociations()[$currentLanguageId] ?? null;
   }
 
   /**
@@ -315,21 +315,26 @@ class Fluency extends Process implements Module {
    * page for SEO and standards compliance
    * @return string
    */
-  public function altLanguageMetaTags(): string {
+  public function renderAltLanguageMetaTags(): string {
     $pwLanguages = $this->languages;
-    $metaTagTemplate = $this->fluencyTools->getTemplate('page_language_meta_tag.tpl.html');
+    $metaTagTemplate = $this->fluencyTools->getTemplate('alt_language_link_tag.tpl.html');
     $isoCodesById = $this->getLanguageIdIsoAssociations();
     $allTags = [];
 
     foreach ($this->languages as $language) {
       if (isset($isoCodesById[$language->id])) {
         $allTags[] = strtr($metaTagTemplate, [
-          '%{URL}' => $this->page->localHttpUrl($language),
-          '%{ISO_CODE}' => $isoCodesById[$language->id]
+          '%{HREF}' => $this->page->localHttpUrl($language),
+          '%{HREFLANG}' => $isoCodesById[$language->id]
         ]);
       }
     }
 
+    // Add default fallback language tag definition (Google recommended)
+    $allTags[] = strtr($metaTagTemplate, [
+      '%{HREF}' => $this->page->localHttpUrl($pwLanguages->get('name=default')),
+      '%{HREFLANG}' => 'x-default'
+    ]);
 
     return implode('', $allTags);
   }
@@ -340,26 +345,32 @@ class Fluency extends Process implements Module {
    * Available options:
    *
    * $opts = [
-   *   'addJs' => false,                        // bool   Default is false
-   *   'id' => 'your-specified-id',             // string
-   *   'classes' => 'additional classes-to-add' // string
+   *   'addJs' => false,                         // bool, default: false
+   *   'id' => 'your-specified-id',              // string
+   *   'classes' => 'additional classes-to-add', // string
+   *   'excludeIds' => []                        // array, IDs of langauges to exclude from options
    * ]
    *
    * @param  array $opts  Additional options for rendering select element
    * @return string
    */
-  public function languageSelectElement(array $opts = []): string {
-    $userLanguage = wire('user')->language;
+  public function renderLanguageSelectElement(array $opts = []): string {
+    $currentLanguage = wire('user')->language;
     $selectElTemplate = $this->fluencyTools->getTemplate('language_select_tag.tpl.html');
     $optionElTemplate = $this->fluencyTools->getTemplate('language_select_option_tag.tpl.html');
     $optionElJs = $this->fluencyTools->getTemplate('language_select_inline_js.tpl.html');
+    $excludeIds = $opts['excludeIds'] ?? [];
     $optionEls = [];
 
     // Create option elements markup, add each to array
     foreach (wire('languages') as $language) {
+      if (in_array($language->id, $excludeIds)) {
+        continue;
+      }
+
       $optionEls[] = strtr($optionElTemplate, [
         '%{URL}' => wire('page')->localUrl($language),
-        '%{SELECTED}' => $userLanguage->id === $language->id ? 'selected' : '',
+        '%{SELECTED}' => $currentLanguage->id === $language->id ? 'selected' : '',
         '%{LANGUAGE_NAME}' => $language->title
       ]);
     }
@@ -368,11 +379,13 @@ class Fluency extends Process implements Module {
     $output = strtr($selectElTemplate, [
       '%{ID}' => $opts['id'] ?? '',
       '%{CLASSES}' => $opts['classes'] ?? '',
-      '%{INLINE_JS}' => $optionElJs,
-      // '%{INLINE_JS}' => !empty($opts['addJs']) && $opts['addJs'] ? $optionElJs : '',
-      '%{OPTION_ELS}' => implode("\n", $optionEls)
+      '%{INLINE_JS}' => !empty($opts['addJs']) && $opts['addJs'] ? $optionElJs : '',
+      '%{CURRENT_LANGUAGE}' => $currentLanguage->title,
+      '%{OPTION_ELS}' => implode('', $optionEls)
     ]);
-
+    echo '<pre>';
+print_r($output);
+die;
     return $output;
   }
 
@@ -421,6 +434,7 @@ class Fluency extends Process implements Module {
       case 'altLanguageMetaTags':
         $returnData = $this->altLanguageMetaTags();
         break;
+      // case 'langaugeSelectMarkup'
       default:
         $returnData = (object) [
           'data' => null,

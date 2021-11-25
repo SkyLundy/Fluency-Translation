@@ -1,6 +1,6 @@
 # Fluency for ProcessWire Changelog
 
-## 0.4.3
+## 0.4
 ### *Breaking Changes, Critical Update* Features added, Bugfixes, enhancements
 - IMPORTANT: This update requires that you re-associate the PW->DeepL languages
   in the module config due to a change in how the module stores DeepL data. This
@@ -12,6 +12,9 @@
 - New method that returns the current language ISO string, see README.md
 - New method that creates `<meta>` tag markup for alternate langauge URLs,
   see README.md
+- New method that creates markup for a <select> element with all ProcessWire
+  configured languages. Can optionally be rendered with inline JS that navigates
+  to the current page in the new selected language. See README.md
 - Module config layout updated. Now better suited for creating per-language
   configurations for future features.
 - Return value of getConfiguredLanguageData restructured to better organize

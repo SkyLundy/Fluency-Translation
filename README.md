@@ -115,33 +115,28 @@ Fluency includes tools to make working with translation and building a multi-lan
 - `Fluency::altLanguageMetaTags()` - This returns a string of alternate language HTML meta tags. The ISO code is provided by DeepL, the URLs are as configured for each page in ProcessWire. See example below.
 - `Fluency::getClientBootData()` - This is the method that is used by Fluency in the Admin when a page is being edited. It provides a structured object containing information about both the source and target languages, as well as all of the UI strings that are used.
 
-Examples:
-Adding this to your document head markup:
+#### `Fluency::altLanguageMetaTags()`
 ```php
 <?php namespace ProcessWire;
 $fluency = $modules->get('Fluency');
 ?>
-<!DOCTYPE html>
-<html lang="<?= $fluency->currentLanguageIsoCode(); ?>">
-  <head>
-    <title><?= $page->title; ?></title>
-    <?= $fluency->altLanguageMetaTags(); ?>
-    <!-- continuing code ommitted... -->
+<head>
+  <title><?= $page->title; ?></title>
+  <?= $fluency->renderAltLanguageMetaTags(); ?>
+<head>
+```
+Output:
+```HTML
+<head>
+  <title>Über meine mehrsprachige Website</title>
+  <link rel="alternate" hreflang="EN" href="https://fluency.com/about-my-website">
+  <link rel="alternate" hreflang="DE" href="https://fluency.com/de/uber-meine-website">
+  <link rel="alternate" hreflang="FR" href="https://fluency.com/fr/a-propos-de-mon-site-web">
+</head>
 ```
 
-Will output this (when the current language is German):
-```HTML
-<!DOCTYPE html>
-<html lang="DE">
-  <head>
-    <title>Über meine mehrsprachige Website</title>
-    <meta rel="alternate" hreflang="EN" href="https://fluency.com/about-my-website">
-    <meta rel="alternate" hreflang="DE" href="https://fluency.com/de/uber-meine-website">
-    <meta rel="alternate" hreflang="FR" href="https://fluency.com/fr/a-propos-de-mon-site-web">
-    <meta rel="alternate" hreflang="ES" href="https://fluency.com/es/sobre-mi-sitio-web">
-    <meta rel="alternate" hreflang="IT" href="https://fluency.com/it/sul-mio-sito-web">
-    <!-- continuing code ommitted... -->
-```
+#### `Fluency::languageList()`
+
 
 ## Extending Fluency Functionality
 A companion module has been made by a member of the ProcessWire community to translate whole pages at once. Read more and download here https://github.com/robertweiss/ProcessTranslatePage
