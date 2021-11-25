@@ -17,6 +17,12 @@ class FluencyLocalization {
    */
   private $localizationDir;
 
+  /**
+   * Holds string for cache directory location
+   * @var [type]
+   */
+  private $cacheDir;
+
   public function __construct($deepL) {
     $this->deepL = $deepL;
     $this->localizationDir = __DIR__ . "/../localization";
@@ -56,6 +62,18 @@ class FluencyLocalization {
   }
 
   /**
+   * Clears all cached translations
+   * @return bool True on success, false on fail
+   */
+  public function clearLocalizations(): bool {
+
+  }
+
+  /////////////////////////
+  // Private ops methods //
+  /////////////////////////
+
+  /**
    * Gets default text from file
    * @param  string $context Language context for file association
    * @return object
@@ -66,21 +84,29 @@ class FluencyLocalization {
 
   /**
    * This gets translated text from cache
-   * @param  string $pwLanguageId ProcessWire Language ID
+   * @param  string $pwlangId ProcessWire Language ID
    * @param  string $context      Language context for file association
    * @return object               Object if file exists, null if it doesn't
    */
-  private function getFromCache(string $languageId, $context): ?object {
+  private function getFromCache(string $langId, $context): ?object {
 
   }
 
   /**
    * This writes translations to a cached JSON file
-   * @param  string $languageId     ProcessWire language ID
+   * @param  string $langId     ProcessWire language ID
    * @param  object $translatedText Object with translations. Matches structure of default files
    * @return [type]                 [description]
    */
-  private function writeToCache(string $languageId, string $context, object $translatedText): bool {
+  private function writeToCache(string $langId, string $context, object $translatedText): bool {
+
+  }
+
+  /**
+   * Clears all cached localization files
+   * @return array Array of ProcessWire language IDs that were cleared
+   */
+  private function clearCache(): array {
 
   }
 }

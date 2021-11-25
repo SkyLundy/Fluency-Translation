@@ -66,7 +66,7 @@ class Fluency extends Process implements Module {
     ]);
 
     $this->deepL = $deepL;
-    $this->fluencyLocalization = new FluencyLocalization($deepL);
+    // $this->fluencyLocalization = new FluencyLocalization($deepL);
 
     if (!$this->moduleShouldInit()) return false;
 
@@ -445,7 +445,17 @@ die;
       case 'altLanguageMetaTags':
         $returnData = $this->altLanguageMetaTags();
         break;
-      // case 'langaugeSelectMarkup'
+      case 'localizeModule':
+        return [1020, 1100];
+        // Localize the module
+        break;
+      case 'clearModuleLocalizations':
+        return true;
+        // clear localizations
+        break;
+      case 'getAllModuleLocalizations':
+        return [1020, 1100];
+        break;
       default:
         $returnData = (object) [
           'data' => null,
@@ -462,6 +472,24 @@ die;
   }
 
   /**
+   * API endpoint for getting usage
+   * /fluency/usage
+   * @return string JSON response
+   */
+  // public function ___executeApiUsage(): string {
+  //   $returnData = $this->apiUsage();
+
+  //   header('Content-Type: application/json');
+  //   header($this->deepL->getHttpMessage($returnData->httpCode));
+
+  //   return json_encode($returnData);
+  // }
+
+  ////////////////
+  // Admin Page //
+  ////////////////
+
+  /**
    * Handles admin page execution
    *
    * @return string
@@ -469,7 +497,7 @@ die;
   public function ___execute(): string {
     $moduleConfig = $this->modules->getModuleConfigData('Fluency');
     $translationToolUiText = $this->getLocalizations()->translationTool;
-
+var_dump(wire('input')->urlSegment(1)); die;
     //////////////////////
     // Create page form //
     //////////////////////
