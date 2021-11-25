@@ -1,0 +1,7 @@
+{
+  "translateTrigger": "Translate from %{DEFAULT_LANGUAGE}",
+  "translationAvailable": "Translation Service Available",
+  "translationNotAvailable": "Translation not available for this langauge",
+  "languageNotAvailable": "Translation not available for this language",
+  "pageNameTranslationNotAvailable": "Translation not available for page names in this language"
+}

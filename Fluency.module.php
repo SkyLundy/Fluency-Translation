@@ -340,8 +340,9 @@ class Fluency extends Process implements Module {
   }
 
   /**
-   * Renders a language select element with options for each language. Options array allow additional
-   * configuration. Optional inline JS that navigates to page in language on select.
+   * Renders an accessible language select element with options for each language. Options array
+   * allows additional configuration. Optional inline JS that navigates to page in language on
+   * select can be added..
    * Available options:
    *
    * $opts = [
@@ -370,18 +371,25 @@ class Fluency extends Process implements Module {
 
       $optionEls[] = strtr($optionElTemplate, [
         '%{URL}' => wire('page')->localUrl($language),
-        '%{SELECTED}' => $currentLanguage->id === $language->id ? 'selected' : '',
+        '%{SELECTED}' => $currentLanguage->id === $language->id ? ' selected' : '',
         '%{LANGUAGE_NAME}' => $language->title
       ]);
     }
 
+    // Set/format values
+    $id = $opts['id'] ?? '';
+    $classes = !empty($opts['classes']) ? str_pad($opts['classes'], 1, ' ', STR_PAD_LEFT) : '';
+    $inlineJs = !empty($opts['addJs']) && $opts['addJs'] ? str_pad($optionElJs, ' ', STR_PAD_LEFT) : '';
+    $options = implode('', $optionEls);
+
     // Add data to select element, output is completed markup
     $output = strtr($selectElTemplate, [
-      '%{ID}' => $opts['id'] ?? '',
-      '%{CLASSES}' => $opts['classes'] ?? '',
-      '%{INLINE_JS}' => !empty($opts['addJs']) && $opts['addJs'] ? $optionElJs : '',
+      '%{ID}' => $id,
+      '%{CLASSES}' => $classes,
+      '%{INLINE_JS}' => $inlineJs,
+      '%{ARIA_SELECTED_LANGUAGE_LABEL}' => $currentLanguage->title,
       '%{CURRENT_LANGUAGE}' => $currentLanguage->title,
-      '%{OPTION_ELS}' => implode('', $optionEls)
+      '%{OPTION_ELS}' => $options
     ]);
     echo '<pre>';
 print_r($output);

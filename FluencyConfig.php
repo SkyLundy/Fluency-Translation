@@ -148,7 +148,9 @@ class FluencyConfig extends ModuleConfig {
 
     // We only want to allow further configuration of the module if the DeepL
     // account type has been selected and API key has been added.
-    if (!$fluencyModule->deepl_api_key || !$apiKeyIsValid) return $inputfields;
+    if (!$fluencyModule->deepl_api_key || !$apiKeyIsValid) {
+      return $inputfields;
+    }
 
     ////////////////////////
     // Module information //
@@ -393,6 +395,19 @@ class FluencyConfig extends ModuleConfig {
     }
 
     $inputfields->add($fieldset);
+
+    ///////////////////////////
+    // Self-Translate Module //
+    ///////////////////////////
+
+    $content = '<p>' . __('Fluency has the ability to translate itself. This means that all text that the user sees when editing pages is automatically translated into all languages configured with Fluency.') . '<p>';
+
+    // Create field for content
+    $field = $this->modules->get('InputfieldMarkup');
+    $field->label = __('Translate UI Elements');
+    $field->value = $content;
+    $inputfields->add($field);
+
 
     ////////////////
     // Beg-a-Thon //
