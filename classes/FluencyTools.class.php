@@ -13,7 +13,7 @@ class FluencyTools {
    * @param  array  $vars     Array of placeholders/values to insert
    * @return string           Completed markup for output
    */
-  public function getMarkup(string $filename, array $tplVars = []): string {
+  public function getTemplate(string $filename, array $tplVars = []): string {
     // Define defaults so they don't have to be entered if not needed at call
     $vars = array_merge([
       '{CLASSES}' => '',

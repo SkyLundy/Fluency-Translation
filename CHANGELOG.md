@@ -7,18 +7,22 @@
   was done to allow for future per-language configurations. No content  will be
   lost or altered.
 - Module now specifies PHP 7.0 as minimum version.
+- Updated README.md with more clarification, better examples, and documentation
+  for new features below.
 - New method that returns the current language ISO string, see README.md
-- New method that creates `<meta>` tag markup for alternate langauge URLs, see README.md
-- Module config layout updated.
-- Return value of getConfiguredLanguageData restructured to organize language data
-  between ProcessWire configuration and DeepL data. See README.md for documentation.
+- New method that creates `<meta>` tag markup for alternate langauge URLs,
+  see README.md
+- Module config layout updated. Now better suited for creating per-language
+  configurations for future features.
+- Return value of getConfiguredLanguageData restructured to better organize
+  language data from ProcessWire and DeepL. See README.md for documentation.
 - Language selects in module config are now sorted alphabetically.
 - Fixed hard coded link for PayPal donate button image.
 - Translation UI text is now configurable in module settings. See README.md
-  for documentation on setting defaults and localization. The module can translate
-  itself.
-- The Translation page name/menu item is now translatable, enabling better module
-  localization
+  for documentation on setting defaults and localization. The module can
+  translate itself.
+- The Translation page name/menu item is now translatable, enabling better
+  module localization
 - Removed hard coding of module path in FluencyTools that would cause errors
   loading/rendering markup for the general translation tool.
 - Translation triggers no longer render for locked fields.
@@ -29,14 +33,16 @@
 ### Bugfixes, enhancement
 - Fixed issue where translation length was limited becauses calls to DeepL API
   were being made using GET rather than POST.
-- Testing using a DeepL Pro developer account allowed for reliable translation of
-  20,000+ words at once. Note: the time taken to translate this much content is
-  very noticeable.
+- Testing using a DeepL Pro developer account allowed for reliable translation
+  of 20,000+ words at once. Note: the time taken to translate this much content
+  is very noticeable.
 
 ## 0.3.1 2021-06-22
 ### Bugfixes, feature added
-- Fixed issue with improper string interpolation when excluding strings as defined in the config.
-- Updated excluded words to handle strings with special characters such as Hanna codes.
+- Fixed issue with improper string interpolation when excluding strings as
+  defined in the config.
+- Updated excluded words to handle strings with special characters such as Hanna
+  codes.
 
 ## 0.3.0 2021-06-19
 ### New feature. Alpha version change.
@@ -54,9 +60,10 @@
 
 ## 0.2.4 2021-02-08
 ### Bugfixes. Upgrade recommended for all users
-- Updated js that handles CKEditor field translation and population. Fixes an issue
-  where some fields may not received translated content and other fields may not
-  allow for translating content until the page/fields are saved at least once.
+- Updated js that handles CKEditor field translation and population. Fixes an
+  issue where some fields may not received translated content and other fields
+  may not allow for translating content until the page/fields are saved at least
+  once.
 - Learned that a space before end of sentence punctuation is a thing in French
   and troubleshooting the module after first noticing that was a waste of time.
   Not relative to module update, just complaining.

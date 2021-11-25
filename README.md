@@ -45,9 +45,9 @@ If no langauges are present in ProcessWire or if languages are present and not c
 ### Customizing/Translating UI Text
 All text for the Fluency UI elements can be customized. This is done through ProcessWire's language setup. In the Admin visit Setup->Languages, edit the 'default' language. Then click "Find Files To Translate".
 
-All UI related translation files will be located in the `module_localizations` folder in the Fluency plugin directory.
+All UI related translation files will be located in the `module_localizations` folder in the Fluency module directory.
 
-By default the "Translate From" trigger for each field uses the title of the default language as it is configured in ProcessWire.
+By default the translation trigger for each field uses the title of the default language in ProcessWire, i.e. "Translate From English", if English was the name you gave the default language in ProcessWire. You may set this by changing it in the translation file for your default language.
 
 ## Using Fluency & DeepL Programatically
 The Fluency module is a ProcessWire interface for bringing DeepL translation to the admin and content editing screens. There are two ways to access translation in your scsripts and templates. The `translate()` method for both is identical and is as follows:
@@ -65,14 +65,13 @@ $fluency->translate(
 ### Using the Fluency module
 This requires that your current user has the `fluency-translate` permission. This will use the API key from the ProcessWire configuration screen as well as the global ignored strings, preserve formatting, etc. It does not reference configured languages as those are defined manually when translating so all are available when using the module directly.
 
+You may access all of the functions that Fluency uses in the admin within your code. When you call the module within your markup, the API key and all settings from the module configuration page are automatically applied.
+
 #### Simple Example
 Translate one string to another language.
 ```php
 $fluency = $modules->get("Fluency");
 
-// Simple example, for more complex requests, including additional API parameters
-// see the DeepL class call below. Any additional configurations will be merged
-// with the module's configuration.
 $result = $fluency->translate("EN", "Hello!", "ES");
 
 echo $result->data->translations[0]->text;
@@ -108,12 +107,13 @@ foreach ($result->data->translations as $translation) {
 ```
 
 ### Additional Methods
-Fluency includes tools to make working with translation and building a multi-language site easier, faster, and more standards/SEO compliant. The following methods are available:
+Fluency includes tools to make working with translation and building a multi-language site easier, faster, and more standards/SEO compliant. In addition to `Fluency::translate()`, the following methods are available:
 
 - `Fluency::apiUsage()` - This returns the current API usage
 - `Fluency::languageList()` - This gets all languages DeepL translates from and to.
 - `Fluency::currentLanguageIsoCode()` - This returns the current language ISO code as a string
 - `Fluency::altLanguageMetaTags()` - This returns a string of alternate language HTML meta tags. The ISO code is provided by DeepL, the URLs are as configured for each page in ProcessWire. See example below.
+- `Fluency::getClientBootData()` - This is the method that is used by Fluency in the Admin when a page is being edited. It provides a structured object containing information about both the source and target languages, as well as all of the UI strings that are used.
 
 Examples:
 Adding this to your document head markup:
@@ -122,10 +122,10 @@ Adding this to your document head markup:
 $fluency = $modules->get('Fluency');
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $fluency->currentLanguageIsoCode(); ?>">
+<html lang="<?= $fluency->currentLanguageIsoCode(); ?>">
   <head>
-    <title><php echo $page->title; ?></title>
-    <?php echo $fluency->altLanguageMetaTags(); ?>
+    <title><?= $page->title; ?></title>
+    <?= $fluency->altLanguageMetaTags(); ?>
     <!-- continuing code ommitted... -->
 ```
 

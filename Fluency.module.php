@@ -317,7 +317,7 @@ class Fluency extends Process implements Module {
    */
   public function altLanguageMetaTags(): string {
     $pwLanguages = $this->languages;
-    $metaTagTemplate = $this->fluencyTools->getMarkup('page_language_meta_tag.tpl.html');
+    $metaTagTemplate = $this->fluencyTools->getTemplate('page_language_meta_tag.tpl.html');
     $isoCodesById = $this->getLanguageIdIsoAssociations();
     $allTags = [];
 
@@ -332,6 +332,48 @@ class Fluency extends Process implements Module {
 
 
     return implode('', $allTags);
+  }
+
+  /**
+   * Renders a language select element with options for each language. Options array allow additional
+   * configuration. Optional inline JS that navigates to page in language on select.
+   * Available options:
+   *
+   * $opts = [
+   *   'addJs' => false,                        // bool   Default is false
+   *   'id' => 'your-specified-id',             // string
+   *   'classes' => 'additional classes-to-add' // string
+   * ]
+   *
+   * @param  array $opts  Additional options for rendering select element
+   * @return string
+   */
+  public function languageSelectElement(array $opts = []): string {
+    $userLanguage = wire('user')->language;
+    $selectElTemplate = $this->fluencyTools->getTemplate('language_select_tag.tpl.html');
+    $optionElTemplate = $this->fluencyTools->getTemplate('language_select_option_tag.tpl.html');
+    $optionElJs = $this->fluencyTools->getTemplate('language_select_inline_js.tpl.html');
+    $optionEls = [];
+
+    // Create option elements markup, add each to array
+    foreach (wire('languages') as $language) {
+      $optionEls[] = strtr($optionElTemplate, [
+        '%{URL}' => wire('page')->localUrl($language),
+        '%{SELECTED}' => $userLanguage->id === $language->id ? 'selected' : '',
+        '%{LANGUAGE_NAME}' => $language->title
+      ]);
+    }
+
+    // Add data to select element, output is completed markup
+    $output = strtr($selectElTemplate, [
+      '%{ID}' => $opts['id'] ?? '',
+      '%{CLASSES}' => $opts['classes'] ?? '',
+      '%{INLINE_JS}' => $optionElJs,
+      // '%{INLINE_JS}' => !empty($opts['addJs']) && $opts['addJs'] ? $optionElJs : '',
+      '%{OPTION_ELS}' => implode("\n", $optionEls)
+    ]);
+
+    return $output;
   }
 
   ///////////////////////////
@@ -446,7 +488,7 @@ class Fluency extends Process implements Module {
     $fieldset->icon = 'language';
     $fieldset->addClass('fluency-translator-fieldset');
     $fieldset->addClass('fluency-overlay-container');
-    $fieldset->appendMarkup = $this->fluencyTools->getMarkup('overlay_translating.tpl.html');
+    $fieldset->appendMarkup = $this->fluencyTools->getTemplate('overlay_translating.tpl.html');
 
     // ===== Create source language select
     $deeplSourceLanguages = $this->deepL->getLanguageList('source')->data;
@@ -548,7 +590,7 @@ class Fluency extends Process implements Module {
     $fieldset->addClass('fluency-api-usage-fieldset');
     $fieldset->addClass('fluency-overlay-container');
     $fieldset->collapsed = true;
-    $fieldset->appendMarkup = $this->fluencyTools->getMarkup('overlay_update_usage_table.tpl.html');
+    $fieldset->appendMarkup = $this->fluencyTools->getTemplate('overlay_update_usage_table.tpl.html');
 
     // NOTE: This only creates a table that can be filled in on demand
     // Create markup
