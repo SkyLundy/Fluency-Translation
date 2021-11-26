@@ -54,6 +54,83 @@ class DeepL {
     $this->setApiUrl($configs['accountType']);
   }
 
+  ///////////////////////
+  // Public Interfaces //
+  ///////////////////////
+
+  /**
+   * This method makes the actual call to DeepL to translate a given string of text.
+   * The $texts array can take up to 50 k/v sets to translate in one request
+   * See: https://www.deepl.com/docs-api.html?part=translating_text
+   *
+   * @param  string       $source         The 2 letter source langauge shortcode
+   * @param  string|array $content        Either a string or an array of strings
+   * @param  string       $target         The 2 letter target langauge shortcode
+   * @param  array        $addParams      Additional DeepL parameters
+   * @param  array        $ignoredStrings Array of strings to not translate
+   * @return object                       Array of translated strings
+   */
+  public function translate(
+    string $sourceLanguage,
+    $content,
+    string $targetLanguage,
+    array  $opts = []
+  ): object {
+    $addParams = $opts['addParams'] ?? [];
+    $ignoredStrings = $opts['ignoredStrings'] ?? [];
+    $output = null;
+
+    // Convert the content to an array if it's a string
+    $content = is_array($content) ? $content : [$content];
+
+    // If there are strings that shouldn't be translated, add no-translate tags
+    if ($ignoredStrings) {
+      $content = $this->addIgnoredTags($content, $ignoredStrings);
+    }
+
+    // Ensure ISO 639-1 source/target language codes are uppercase
+    $request = array_merge($addParams, [
+     'source_lang' => strtoupper($sourceLanguage),
+     'target_lang' => strtoupper($targetLanguage),
+     'tag_handling' => 'xml',
+     'text' => $content
+    ]);
+
+    $output = $this->apiCall('/translate', $request);
+
+    // If there were ignored strings, remove their tags from the returned data
+    if ($ignoredStrings && isset($output->data->translations)) {
+      $output->data->translations = $this->removeIgnoredTags($output->data->translations);
+    }
+
+    return $output;
+  }
+
+  /**
+   * Returns a multidimensional array containing langauges translatable by DeepL
+   * Source: Language translating from, list of language you can translate from
+   * Target: Language translating to, list of languages you can translate
+   * @param  string $type Get source or target langauges (parameter should be source/target)
+   * @return object
+   */
+  public function availableLanguages(string $type = 'target'): object {
+    return $this->apiCall('/languages', [
+      'type' => $type
+    ]);
+  }
+
+  /**
+   * Gets the current API usage including character limit and characters translated
+   * @return object
+   */
+  public function getApiUsage(): object {
+    return $this->apiCall('/usage');
+  }
+
+  //////////////////////
+  // Internal Methods //
+  //////////////////////
+
   /**
    * Sets the appropriate API URL determined by the provided account type
    * @param string $accountType Type of account, either 'free' or 'pro'
@@ -187,122 +264,53 @@ class DeepL {
 
   /**
    * Adds the tag that prevents DeepL from translating words/phrases.
-   *
-   * @param string $text String to add DeepL ignored tags
+   * @param array  $content        Array of strings to add ignored tags to
+   * @param array  $ignoredStrings String to add DeepL ignored tags
    */
-  private function addIgnoredTags(string $text, array $ignoredStrings): string {
-    $instancesFound = [];
+  private function addIgnoredTags(array $content, array $ignoredStrings): array {
+    // Map content array, return modiied data
+    $output = array_map(function($text) use ($ignoredStrings) {
+      return $this->addIgnoredTags($text, $ignoredStrings);
 
-    // Get all instances of ignored strings
-    foreach ($ignoredStrings as $str) {
-      preg_match_all('/' . preg_quote($str) . '/i', $text, $matches);
+      $instancesFound = [];
 
-      $instancesFound = array_merge($instancesFound, $matches[0]);
-    }
+      // Get all instances of ignored strings
+      foreach ($ignoredStrings as $str) {
+        preg_match_all('/' . preg_quote($str) . '/i', $text, $matches);
 
-    // Replace ignored string matches with tagged versions
-    foreach ($instancesFound as $instance) {
-      $ignoredTagName = self::IGNORED_TAG_NAME;
+        $instancesFound = array_merge($instancesFound, $matches[0]);
+      }
 
-      $taggedInstance = "<{$ignoredTagName}>{$instance}</{$ignoredTagName}>";
+      // Replace ignored string matches with tagged versions
+      foreach ($instancesFound as $instance) {
+        $ignoredTagName = self::IGNORED_TAG_NAME;
 
-      $text = str_replace($instance, $taggedInstance, $text);
-    }
+        $taggedInstance = "<{$ignoredTagName}>{$instance}</{$ignoredTagName}>";
 
-    return $text;
-  }
+        $text = str_replace($instance, $taggedInstance, $text);
+      }
 
-  /**
-   * Removes the ignored tag from translated text
-   *
-   * @param  string  $text            String containing ignore tags to strip
-   * @param  array   $ignoredStrings  Strings to not be translated
-   * @return string                   String without tags
-   */
-  private function removeIgnoredTags(string $text, array $ignoredStrings): string {
-    return preg_replace('/(<\/?' . self::IGNORED_TAG_NAME . '>)/', '', $text);
-  }
-
-  /**
-   * This method makes the actual call to DeepL to translate a given string of text.
-   * The $texts array can take up to 50 k/v sets to translate in one request
-   * See: https://www.deepl.com/docs-api.html?part=translating_text
-   *
-   * @param  string       $source         The 2 letter source langauge shortcode
-   * @param  string|array $content        Either a string or an array of strings
-   * @param  string       $target         The 2 letter target langauge shortcode
-   * @param  array        $addParams      Additional DeepL parameters
-   * @param  array        $ignoredStrings Array of strings to not translate
-   * @return object                       Array of translated strings
-   */
-  public function translate(
-    string $sourceLanguage,
-    $content,
-    string $targetLanguage,
-    array $addParams = [],
-    array $ignoredStrings = []
-  ): object {
-    $hasIgnoredStrings = count($ignoredStrings);
-    $output = null;
-
-    // Convert the content to an array if it's a string
-    $content = gettype($content) === 'array' ? $content : [$content];
-
-    // If there are strings that shouldn't be translated, add no-translate tags
-    if ($hasIgnoredStrings) {
-      $content = array_map(function($text) use ($ignoredStrings) {
-        return $this->addIgnoredTags($text, $ignoredStrings);
-      }, $content);
-    }
-
-    // Ensure ISO 639-1 language code is uppercase
-    $sourceLanguage = strtoupper($sourceLanguage);
-    $targetLanguage = strtoupper($targetLanguage);
-
-    $request = array_merge($addParams, [
-     'source_lang' => $sourceLanguage,
-     'target_lang' => $targetLanguage,
-     'tag_handling' => 'xml',
-     'text' => $content
-    ]);
-
-    $output = $this->apiCall('/translate', $request);
-
-    // If there were ignored strings, remove their tags from the returned data
-    if ($hasIgnoredStrings && isset($output->data->translations)) {
-      $output->data->translations = array_map(function($translation) use ($ignoredStrings) {
-        // The array returned by DeepL contains objects with arrays containing the
-        // detected langauge and the translated string. We will pull this data,
-        // strip the ignore tags, and return it in the original structure.
-        $translation->text = $this->removeIgnoredTags(
-          $translation->text,
-          $ignoredStrings
-        );
-
-        return $translation;
-      }, $output->data->translations);
-    }
+      return $text;
+    }, $content);
 
     return $output;
   }
 
   /**
-   * Returns a multidimensional array containing all of the languages available
-   * for translation by DeepL
-   * @param  string $type Get source or target langauges (parameter should be source/target)
-   * @return object
+   * Removes the ignored tags from array of translated texts from DeepL
+   * @param  array $translations
+   * @return array
    */
-  public function getLanguageList(string $type = 'target'): object {
-    return $this->apiCall('/languages', [
-      'type' => $type
-    ]);
-  }
+  private function removeIgnoredTags(array $translations): array {
+    $output = array_map(function($translation) use ($ignoredStrings) {
+      // The array returned by DeepL contains objects with arrays containing the
+      // detected langauge and the translated string. We will pull this data,
+      // strip the ignore tags, and return it in the original structure.
+      $tagPattern = '/(<\/?' . self::IGNORED_TAG_NAME . '>)/';
 
-  /**
-   * Gets the current API usage including character limit and characters translated
-   * @return object
-   */
-  public function getApiUsage(): object {
-    return $this->apiCall('/usage');
+      $translation->text = preg_replace($tagPattern, '', $translation->text);
+
+      return $translation;
+    }, $translations);
   }
 }

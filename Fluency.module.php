@@ -237,7 +237,7 @@ class Fluency extends Process implements Module {
    *
    * @return array Array with all boot data needed by client UI scripts.
    */
-  private function getClientBootData(): object {
+  public function getClientBootData(): object {
     return (object) [
       'languages' => $this->getConfiguredLanguageData(),
       'ui' => (object) [
@@ -301,8 +301,8 @@ class Fluency extends Process implements Module {
    * Gets a list of languages that DeepL can translate from/to
    * @return object
    */
-  public function languageList(): object {
-    return $this->deepL->getLanguageList();
+  public function translatableLanguages(): object {
+    return $this->deepL->availableLanguages();
   }
 
   /**
@@ -401,6 +401,8 @@ class Fluency extends Process implements Module {
   // API Endpoint Handling //
   ///////////////////////////
 
+  // This is the interface that makes the module action methods available via AJAX
+
   /**
    * Handles AJAX requests to /{admin slug}/fluency/data
    * The req GET parameter value determines what data will be returned and
@@ -426,15 +428,17 @@ class Fluency extends Process implements Module {
           urldecode($postData->sourceLanguage),
           urldecode($postData->content),
           urldecode($postData->targetLanguage),
-          [],
-          $postData->ignoredStrings ?? []
+          [
+            'ignoredStrings' => $postData->ignoredStrings ?? [],
+            'addParams' => $postData->addParams ?? []
+          ],
         );
         break;
       case 'usage':
         $returnData = $this->apiUsage();
         break;
-      case 'languageList':
-        $returnData = $this->languageList();
+      case 'translatableLanguages':
+        $returnData = $this->translatableLanguages();
         break;
       case 'currentLanguageIsoCode':
         $returnData = $this->currentLanguageIsoCode();
@@ -528,7 +532,7 @@ class Fluency extends Process implements Module {
     $fieldset->appendMarkup = $this->fluencyTools->getTemplate('overlay_translating.tpl.html');
 
     // ===== Create source language select
-    $deeplSourceLanguages = $this->deepL->getLanguageList('source')->data;
+    $deeplSourceLanguages = $this->deepL->availableLanguages('source')->data;
 
     $sourceLangSelect = $this->modules->get('InputfieldSelect');
     $sourceLangSelect->name = "fluency_translate_source_lang";
@@ -564,7 +568,7 @@ class Fluency extends Process implements Module {
     $fieldset->append($sourceLangSelect);
 
     // ===== Create destination language select
-    $deeplTargetLanguages = $this->deepL->getLanguageList('target')->data;
+    $deeplTargetLanguages = $this->deepL->availableLanguages('target')->data;
 
     $targetLangSelect = $this->modules->get('InputfieldSelect');
     $targetLangSelect->name = "fluency_translate_target_lang";

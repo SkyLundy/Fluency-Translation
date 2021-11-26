@@ -31,6 +31,13 @@
 - Translation triggers no longer render for locked fields.
 - Significant code refactoring for clarity. Removed unused code left over from
   initial development.
+- Refactored/reorganized DeepL class for easier readability and better method abstraction
+- `DeepL::translate()` now takes an `$opts` array rather than separate arguments for `addParams` and
+  `ignoredStrings`.
+- `Fluency::translate()` now matches the DeepL translate method in it's parameters. Please see
+  README.md for details
+- Added more developer friendly documentation in README.md
+- Added method return examples from API with .json encoded examples
 
 ## 0.3.2 2021-07-03
 ### Bugfixes, enhancement
