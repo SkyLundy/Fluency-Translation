@@ -3,6 +3,7 @@
 // FileCompiler=0
 
 require_once 'classes/FluencyTools.class.php';
+require_once 'classes/FluencyLocalization.class.php';
 require_once 'engines/DeepL.class.php';
 
 /**
@@ -316,19 +317,22 @@ class Fluency extends Process implements Module {
   /**
    * Generates alt language meta tags to be rendered in the <head> element of the
    * page for SEO and standards compliance
+   * @param  array  $excludeIds ProcessWire IDs of languages to not render alternate link tag for
    * @return string
    */
-  public function renderAltLanguageMetaTags(): string {
+  public function renderAltLanguageMetaTags(array $excludeIds = []): string {
     $pwLanguages = $this->languages;
     $metaTagTemplate = $this->fluencyTools->getTemplate('alt_language_link_tag.tpl.html');
     $isoCodesById = $this->getLanguageIdIsoAssociations();
     $allTags = [];
 
     foreach ($this->languages as $language) {
-      if (isset($isoCodesById[$language->id])) {
+      $languageId = $langauge->id;
+
+      if (!in_array($languageId, $excludeIds) && isset($isoCodesById[$languageId])) {
         $allTags[] = strtr($metaTagTemplate, [
           '%{HREF}' => $this->page->localHttpUrl($language),
-          '%{HREFLANG}' => $isoCodesById[$language->id]
+          '%{HREFLANG}' => $isoCodesById[$languageId]
         ]);
       }
     }
@@ -352,7 +356,7 @@ class Fluency extends Process implements Module {
    *   'addJs' => false,                         // bool, default: false
    *   'id' => 'your-specified-id',              // string
    *   'classes' => 'additional classes-to-add', // string
-   *   'excludeIds' => []                        // array, IDs of langauges to exclude from options
+   *   'excludeIds' => []                        // array, ProcessWire  IDs of langauges to exclude
    * ]
    *
    * @param  array $opts  Additional options for rendering select element
@@ -381,8 +385,8 @@ class Fluency extends Process implements Module {
 
     // Set/format values
     $id = $opts['id'] ?? '';
-    $classes = !empty($opts['classes']) ? str_pad($opts['classes'], 1, ' ', STR_PAD_LEFT) : '';
-    $inlineJs = !empty($opts['addJs']) && $opts['addJs'] ? str_pad($optionElJs, ' ', STR_PAD_LEFT) : '';
+    $classes = !empty($opts['classes']) ? str_pad($opts['classes'], 1, STR_PAD_LEFT) : '';
+    $inlineJs = !empty($opts['addJs']) && $opts['addJs'] ? str_pad($optionElJs, 1, STR_PAD_LEFT) : '';
     $options = implode('', $optionEls);
 
     // Add data to select element, output is completed markup

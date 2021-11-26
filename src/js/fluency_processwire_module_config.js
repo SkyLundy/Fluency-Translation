@@ -16,7 +16,7 @@ Fluency.ProcessWireModuleConfig = (function() {
    * @return {void}
    */
   var init = function() {
-
+    alert('fired');
   }
 
   var _bindTranslateTrigger = function() {

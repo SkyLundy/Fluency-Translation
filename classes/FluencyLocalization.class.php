@@ -33,7 +33,7 @@ class FluencyLocalization {
    * Associates contexts with filenames
    * @var array
    */
-  $fileContextAssociations = [
+  private $fileContextAssociations = [
     'pageEditor' => 'page_editor.json',
     'translationTool' => 'translation_tool.json',
     'languageSelectElement' => 'langauge_select_element.json'

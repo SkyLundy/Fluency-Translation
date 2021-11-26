@@ -41,6 +41,7 @@ class FluencyConfig extends ModuleConfig {
     $fluencyTools = new FluencyTools;
     $fluencyModule = $this->modules->get('Fluency');
     $moduleConfig = $this->modules->getModuleConfigData('Fluency');
+    $moduleBaseUrl = wire('config')->urls->get($fluencyModule);
     $deeplSourceLanguages = [];
     $deeplTargetLanguages = [];
     $deeplApiUsage = null;
@@ -402,6 +403,12 @@ class FluencyConfig extends ModuleConfig {
 
     $content = '<p>' . __('Fluency has the ability to translate itself. This means that all text that the user sees when editing pages is automatically translated into all languages configured with Fluency.') . '<p>';
 
+
+
+    $content .= "<script src='{$moduleBaseUrl}/src/js/fluency_tools.js'></script>";
+    $content .= "<script src='{$moduleBaseUrl}/src/js/fluency_processwire_module_config.js'></script>";
+    $content .= "<script>Fluency.ProcessWireModuleConfig.init()</script>";
+
     // Create field for content
     $field = $this->modules->get('InputfieldMarkup');
     $field->label = __('Translate UI Elements');
@@ -412,7 +419,7 @@ class FluencyConfig extends ModuleConfig {
     ////////////////
     // Beg-a-Thon //
     ////////////////
-    $moduleBaseUrl = wire('config')->urls->get($this->modules->get('Fluency'));
+    // $moduleBaseUrl = wire('config')->urls->get($this->modules->get('Fluency'));
 
     $content = '<h3>' . __("Want to brighten someone's day?") . '</h3>';
 
