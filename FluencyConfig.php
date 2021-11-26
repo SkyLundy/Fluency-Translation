@@ -291,7 +291,7 @@ class FluencyConfig extends ModuleConfig {
     /////////////////////////
     // Create fieldset
     $fieldset = $this->modules->get('InputfieldFieldset');
-    $fieldset->name = 'fieldgroup_translation_options';
+    $fieldset->name = 'fieldset_translation_options';
     $fieldset->label = __('Translation Options');
     $fieldset->description = __('Configure translation behavior.');
 
@@ -328,7 +328,7 @@ class FluencyConfig extends ModuleConfig {
 
     // ===== Create fieldset
     $fieldset = $this->modules->get('InputfieldFieldset');
-    $fieldset->name = 'fieldgroup_language_associations';
+    $fieldset->name = 'fieldset_language_associations';
     $fieldset->label = __('Language Translation Associations');
 
     $userLanguage = $this->user->language->name;
@@ -397,24 +397,39 @@ class FluencyConfig extends ModuleConfig {
 
     $inputfields->add($fieldset);
 
-    ///////////////////////////
-    // Self-Translate Module //
-    ///////////////////////////
+    /////////////////////////////////////////////
+    // Module Localization && Self-Translation //
+    /////////////////////////////////////////////
 
-    $content = '<p>' . __('Fluency has the ability to translate itself. This means that all text that the user sees when editing pages is automatically translated into all languages configured with Fluency.') . '<p>';
+    // ===== Create fieldset
+    // $fieldset = $this->modules->get('InputfieldFieldset');
+    // $fieldset->name = 'fieldset_language_associations';
+    // $fieldset->label = __('Module Localization & Self Translation');
 
+    // $content = '<p>' . __('Fluency has the ability to translate itself. This means that all text that the user sees when editing pages is automatically translated into all languages configured with Fluency.') . '<p>';
 
+    // // Create field for content
+    // $field = $this->modules->get('InputfieldMarkup');
+    // $field->collapsed = Inputfield::collapsedNever;
+    // $field->skipLabel = Inputfield::skipLabelHeader;
+    // $field->themeBorder = 'hide';
+    // $field->value = $content;
+    // $fieldset->add($field);
 
-    $content .= "<script src='{$moduleBaseUrl}/src/js/fluency_tools.js'></script>";
-    $content .= "<script src='{$moduleBaseUrl}/src/js/fluency_processwire_module_config.js'></script>";
-    $content .= "<script>Fluency.ProcessWireModuleConfig.init()</script>";
+    // Include scripts
+    // $content = "<script src='{$moduleBaseUrl}/src/js/fluency_tools.js'></script>";
+    // $content .= "<script src='{$moduleBaseUrl}/src/js/fluency_processwire_module_config.js'></script>";
+    // $content .= "<script>Fluency.ProcessWireModuleConfig.init()</script>";
 
-    // Create field for content
-    $field = $this->modules->get('InputfieldMarkup');
-    $field->label = __('Translate UI Elements');
-    $field->value = $content;
-    $inputfields->add($field);
+    // // Create field scripts
+    // $field = $this->modules->get('InputfieldMarkup');
+    // $field->collapsed = Inputfield::collapsedPopulated;
+    // $field->skipLabel = Inputfield::skipLabelHeader;
+    // $field->themeBorder = 'hide';
+    // $field->value = $content;
+    // $fieldset->add($field);
 
+    // $inputfields->add($fieldset);
 
     ////////////////
     // Beg-a-Thon //
