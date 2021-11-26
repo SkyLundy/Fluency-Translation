@@ -327,7 +327,7 @@ class Fluency extends Process implements Module {
     $allTags = [];
 
     foreach ($this->languages as $language) {
-      $languageId = $langauge->id;
+      $languageId = $language->id;
 
       if (!in_array($languageId, $excludeIds) && isset($isoCodesById[$languageId])) {
         $allTags[] = strtr($metaTagTemplate, [
@@ -383,24 +383,16 @@ class Fluency extends Process implements Module {
       ]);
     }
 
-    // Set/format values
-    $id = $opts['id'] ?? '';
-    $classes = !empty($opts['classes']) ? str_pad($opts['classes'], 1, STR_PAD_LEFT) : '';
-    $inlineJs = !empty($opts['addJs']) && $opts['addJs'] ? str_pad($optionElJs, 1, STR_PAD_LEFT) : '';
-    $options = implode('', $optionEls);
-
     // Add data to select element, output is completed markup
     $output = strtr($selectElTemplate, [
-      '%{ID}' => $id,
-      '%{CLASSES}' => $classes,
-      '%{INLINE_JS}' => $inlineJs,
+      '%{ID}' => $opts['id'] ?? '',
+      '%{CLASSES}' => !empty($opts['classes']) ? " {$opts['classes']}" : '',
+      '%{INLINE_JS}' => !empty($opts['addJs']) && $opts['addJs'] ? " {$optionElJs}" : '',
       '%{ARIA_SELECTED_LANGUAGE_LABEL}' => $currentLanguage->title,
       '%{CURRENT_LANGUAGE}' => $currentLanguage->title,
-      '%{OPTION_ELS}' => $options
+      '%{OPTION_ELS}' => implode('', $optionEls)
     ]);
-    echo '<pre>';
-print_r($output);
-die;
+
     return $output;
   }
 
