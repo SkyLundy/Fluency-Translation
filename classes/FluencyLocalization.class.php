@@ -48,6 +48,7 @@ class FluencyLocalization {
   public function get(string $context): object {
     $userLanguage = wire('user')->language;
 
+    // If the user language is the default, get the default language
 
     return (object) $translatedStrings;
   }
