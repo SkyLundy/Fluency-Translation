@@ -254,6 +254,7 @@ class Fluency extends Process implements Module {
    * @param  string|array $content         Can be a string or an array of strings
    * @param  string       $targetLangCode  2 letter language shortcode translating to
    * @param  array        $addApiParams    Additional DeepL API parameters
+   * @param  array        $addApiParams    Additional DeepL API parameters
    * @param  array        $ignoredStrings  Strings to not translate (Merged with CMS config'd strings)
    * @return object                        Fluency  module response object
    */
@@ -261,28 +262,37 @@ class Fluency extends Process implements Module {
     string $sourceLangCode,
     $content,
     string $targetLangCode,
-    array  $addApiParams = [],
-    ?array $ignoredStrings = []
+    $opts = []
+    // array  $addApiParams = [],
+    // ?array $ignoredStrings = []
   ): object {
+
     // Get configured non-translated strings and merge with passed array
     if ($this->non_translated_strings) {
+      $ignoredStrings = $opts['ignoredStrings'] ?? [];
+
       $configIgnoredStrings = explode(',', $this->non_translated_strings);
       $configIgnoredStrings = array_map('trim', $configIgnoredStrings);
 
-      $ignoredStrings = array_merge($configIgnoredStrings, $ignoredStrings);
+      $opts['ignoredStrings'] = array_merge($configIgnoredStrings, $ignoredStrings);
     }
+
     // Configure additional parameters
-    $parameters = array_merge([
-      'preserve_formatting' => $this->api_param_preserve_formatting
-    ], $addApiParams);
+    if (!!$this->api_param_preserve_formatting) {
+      $addParams = $opts['addParams'] ?? [];
+
+      $opts['addParams'] = array_merge([
+        'preserve_formatting' => $this->api_param_preserve_formatting
+      ], $addParams);
+    }
+
 
     // Translate and get value
     $result = $this->deepL->translate(
       $sourceLangCode,
       $content,
       $targetLangCode,
-      $parameters,
-      $ignoredStrings
+      $opts
     );
 
     return $result;
@@ -299,10 +309,25 @@ class Fluency extends Process implements Module {
 
   /**
    * Gets a list of languages that DeepL can translate from/to
+   * @param  bool   $sort Sort languages by name
    * @return object
    */
-  public function translatableLanguages(): object {
-    return $this->deepL->availableLanguages();
+  public function translatableLanguages(bool $sort = true): object {
+    $source = $this->deepL->availableLanguages('source')->data;
+    $target = $this->deepL->availableLanguages('target')->data;
+
+    $sortLangs = function(array $langList): array {
+      usort($langList, function($a, $b) {
+        return strcmp($a->name, $b->name);
+      });
+
+      return $langList;
+    };
+
+    return (object) [
+      'source' => $sort ? $sortLangs($source) : $source,
+      'target' => $sort ? $sortLangs($target) : $target
+    ];
   }
 
   /**
@@ -420,7 +445,7 @@ class Fluency extends Process implements Module {
       case 'getBootData':
         $returnData = (object) [
           'data' => $this->getClientBootData(),
-          'httpCode' => 200
+          'httpStatus' => 200
         ];
         break;
       case 'translate':
@@ -460,14 +485,14 @@ class Fluency extends Process implements Module {
       default:
         $returnData = (object) [
           'data' => null,
-          'httpCode' => 400,
+          'httpStatus' => 400,
           'message' => 'Fluency Module Error: No request parameter found or incorrect parameter received'
         ];
         break;
     }
 
     header('Content-Type: application/json');
-    header($this->deepL->getHttpMessage($returnData->httpCode));
+    header($this->deepL->getHttpMessage($returnData->httpStatus));
 
     return json_encode($returnData);
   }

@@ -63,28 +63,18 @@ class FluencyConfig extends ModuleConfig {
       $request = $deepL->getApiUsage();
 
       // API key is good
-      if ($request->httpCode !== 403) {
+      if ($request->httpStatus !== 403) {
         $apiKeyIsValid = true;
         $deeplApiUsage = $request->data;
         // Get all source/target langs. This ensures that Fluency always has
         // all of DeepL's languages available
-        $deeplSourceLanguages = $deepL->getLanguageList('source')->data;
-        $deeplTargetLanguages = $deepL->getLanguageList('target')->data;
+        $deeplLanguages = $fluencyModule->translatableLanguages();
 
-
-        // Sort source Languages
-        usort($deeplSourceLanguages, function($a, $b) {
-          return strcmp($a->name, $b->name);
-        });
-
-
-        // Sort target Languages
-        usort($deeplTargetLanguages, function($a, $b) {
-          return strcmp($a->name, $b->name);
-        });
+        $deeplSourceLanguages = $deeplLanguages->source;
+        $deeplTargetLanguages = $deeplLanguages->target;
       }
 
-      if ($request->httpCode === 403) {
+      if ($request->httpStatus === 403) {
         $apiKeyIsValid = false;
         $apiKeyCheckMessage = 'Authorization failed. Please supply a valid API key.';
       }
@@ -224,7 +214,7 @@ class FluencyConfig extends ModuleConfig {
     // Create markup for field
     $items = '';
 
-    for ($i=0; $i < count($deeplSourceLanguages); $i++) {
+    for ($i = 0; $i < count($deeplSourceLanguages); $i++) {
       $lang = $deeplSourceLanguages[$i];
 
       $items .= strtr($itemTpl, [

@@ -109,7 +109,7 @@ class DeepL {
   /**
    * Returns a multidimensional array containing langauges translatable by DeepL
    * Source: Language translating from, list of language you can translate from
-   * Target: Language translating to, list of languages you can translate
+   * Target: Language translating to, list of languages you can translate to
    * @param  string $type Get source or target langauges (parameter should be source/target)
    * @return object
    */
@@ -257,7 +257,7 @@ class DeepL {
     // from the DeepL::getErrorMessage() public method
     // $output['data'] = $httpResponseCode === 200 ? $data : null;
     $output['data'] = $data;
-    $output['httpCode'] = $httpResponseCode;
+    $output['httpStatus'] = $httpResponseCode;
 
     return (object) $output;
   }

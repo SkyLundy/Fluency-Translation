@@ -160,7 +160,7 @@ Fluency.Admin = (function() {
       content: userInputData.content,
       targetLanguage: userInputData.targetLanguage
     }, function(err, response) {
-      if (response.httpCode === 200) {
+      if (response.httpStatus === 200) {
         _updateTranslator(response.data)
       }
     })
@@ -198,7 +198,7 @@ Fluency.Admin = (function() {
       Fluency.Tools.showActivityOverlay(usageTableEls.overlay)
 
       Fluency.Tools.moduleRequest({req: 'usage'}, function(err, response) {
-        if (response.httpCode === 200) {
+        if (response.httpStatus === 200) {
           _updateUsageTable(response.data)
         }
       })

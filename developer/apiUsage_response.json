@@ -3,5 +3,5 @@
     "character_count": 18,
     "character_limit": 500000
   },
-  "httpCode": 200
+  "httpStatus": 200
 }

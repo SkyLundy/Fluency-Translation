@@ -131,5 +131,5 @@
       "supports_formality": false
     }
   ],
-  "httpCode": 200
+  "httpStatus": 200
 }
