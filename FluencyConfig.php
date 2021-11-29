@@ -392,34 +392,40 @@ class FluencyConfig extends ModuleConfig {
     /////////////////////////////////////////////
 
     // ===== Create fieldset
-    // $fieldset = $this->modules->get('InputfieldFieldset');
-    // $fieldset->name = 'fieldset_language_associations';
-    // $fieldset->label = __('Module Localization & Self Translation');
+    $fieldset = $this->modules->get('InputfieldFieldset');
+    $fieldset->name = 'fieldset_language_associations';
+    $fieldset->label = __('Module Localization & Self Translation');
 
-    // $content = '<p>' . __('Fluency has the ability to translate itself. This means that all text that the user sees when editing pages is automatically translated into all languages configured with Fluency.') . '<p>';
+    $content = '<p>' . __('Fluency has the ability to translate itself. This means that all text that the user sees when editing pages is automatically translated into all languages configured with Fluency.') . '<p>';
 
-    // // Create field for content
-    // $field = $this->modules->get('InputfieldMarkup');
-    // $field->collapsed = Inputfield::collapsedNever;
-    // $field->skipLabel = Inputfield::skipLabelHeader;
-    // $field->themeBorder = 'hide';
-    // $field->value = $content;
-    // $fieldset->add($field);
+    // Create field for content
+    $field = $this->modules->get('InputfieldMarkup');
+    $field->collapsed = Inputfield::collapsedNever;
+    $field->skipLabel = Inputfield::skipLabelHeader;
+    $field->themeBorder = 'hide';
+    $field->value = $content;
+    $fieldset->add($field);
 
-    // Include scripts
-    // $content = "<script src='{$moduleBaseUrl}/src/js/fluency_tools.js'></script>";
-    // $content .= "<script src='{$moduleBaseUrl}/src/js/fluency_processwire_module_config.js'></script>";
-    // $content .= "<script>Fluency.ProcessWireModuleConfig.init()</script>";
+    // Add buttons
+    $button = $this->modules->get('InputfieldSubmit');
+    $button->addClass('fluency-localization-translate-module-button');
+    $button->addClass('fluency-localization-button');
+    $button->addClass('js-fluency-translate-module');
+    $button->text = 'Localize Module';
+    $button->attr('icon','language');
+    $fieldset->add($button);
 
-    // // Create field scripts
-    // $field = $this->modules->get('InputfieldMarkup');
-    // $field->collapsed = Inputfield::collapsedPopulated;
-    // $field->skipLabel = Inputfield::skipLabelHeader;
-    // $field->themeBorder = 'hide';
-    // $field->value = $content;
-    // $fieldset->add($field);
 
-    // $inputfields->add($fieldset);
+    $button = $this->modules->get('InputfieldSubmit');
+    $button->addClass('fluency-localization-clear-module-cache-button');
+    $button->addClass('fluency-localization-button');
+    $button->addClass('js-fluency-clear-module-cache');
+    $button->text = 'Clear Localization Cache';
+    $button->attr('icon','bomb');
+    $fieldset->add($button);
+
+
+    $inputfields->add($fieldset);
 
     ////////////////
     // Beg-a-Thon //
@@ -429,8 +435,6 @@ class FluencyConfig extends ModuleConfig {
     $content = '<h3>' . __("Want to brighten someone's day?") . '</h3>';
 
     $content .= '<p>' . __("Did you or your client find this module useful? Do you have cash just lying around? Did you sneak in a few extra bucks in your client contract to pass along to the module builders you love? Whatever the case, if you want to throw a tip my way, give that button a click! It will probably go towards bourbon.") . '</p>';
-
-    $content .= "<style>.button-donate {border:1px solid #29A2CE;box-shadow: 0 5px 10px rgba(0,0,0,.35);transition: box-shadow .5s,scale .4s;display: block; margin: 20px auto; width: 200px;}.button-donate:hover {box-shadow: 0 10px 20px rgba(0,0,0,.25);scale: 1.005;}</style>";
 
     $content .= "<a class='button-donate' href='https://paypal.me/noonesboy' rel='noopener' target='_blank'><img src='{$moduleBaseUrl}/img/paypal_me.png' alt='PayPal Me'></a>";
 

@@ -1,0 +1,14 @@
+/* Beg-a-thon button */
+.button-donate {
+  border: 1px solid #29A2CE;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, .35);
+  transition: box-shadow .5s, scale .4s;
+  display: block;
+  margin: 40px auto 20px;
+  width: 200px;
+}
+
+  .button-donate:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .25);
+    scale: 1.005;
+  }

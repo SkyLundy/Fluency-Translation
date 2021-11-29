@@ -13,35 +13,29 @@ class Fluency extends Process implements Module {
 
   /**
    * Holds DeepL class instance
-   * Public so that the DeepL object can be called directly for use via the
-   * module
+   * Public so that the DeepL object can be called directly outside of the module
    * @var DeepL
    */
   public $deepL;
 
   /**
-   * Holds data for every language in ProcessWire and their DeepL associations
-   * @var array
+   * This holds an instance of FluencyLocalization
+   * This is the class that handles auto-localization of the module and the UI.
+   * @var FluencyLocalization
    */
-  private $allLanguageData = [];
+  public $fluencyLocalization;
 
   /**
    * Name/slug of the Fluency admin page
    * @var string
    */
-  private $adminPageName = 'fluency';
+  // private $adminPageName = 'fluency';
 
   /**
    * This is assigned an instance of fluencyTools when module is ready
-   * @var null
+   * @var FluencyTools
    */
-  private $fluencyTools = null;
-
-  /**
-   * This holds the module config data. Is assigned when module is ready
-   * @var array
-   */
-  private $fluencyConfig;
+  private $fluencyTools;
 
   /**
    * Languages that cannot be used for translating page names (URLs)
@@ -59,7 +53,6 @@ class Fluency extends Process implements Module {
    */
   public function ready() {
     $this->fluencyTools = new FluencyTools;
-    $this->fluencyConfig = $this->modules->getModuleConfigData('Fluency');
 
     $deepL = new DeepL([
       'apiKey' => $this->deepl_api_key,
@@ -69,7 +62,9 @@ class Fluency extends Process implements Module {
     $this->deepL = $deepL;
     $this->fluencyLocalization = new FluencyLocalization($deepL);
 
-    if (!$this->moduleShouldInit()) return false;
+    if (!$this->moduleShouldInit()) {
+      return false;
+    }
 
     // CSS/JS assets
     $this->insertAssets();
@@ -82,7 +77,7 @@ class Fluency extends Process implements Module {
    * @return bool
    */
   private function moduleShouldInit(): bool {
-    $moduleConfig = $this->fluencyConfig;
+    $moduleConfig = $this->modules->getModuleConfigData('Fluency');
 
     return $this->page->name !== 'login' &&
            $this->deepl_api_key &&
@@ -114,6 +109,14 @@ class Fluency extends Process implements Module {
       case 'language-translator':
         // On the static text translation pages
         $this->config->scripts->add("{$moduleJsPath}fluency_language_translator_page.js");
+        break;
+      case 'module':
+        // Check URL to see that we are in the Fluency module config
+        if ($this->input->get->name === 'Fluency') {
+          $this->config->styles->add("{$moduleCssPath}fluency_processwire_module_config.css");
+          $this->config->scripts->add("{$moduleJsPath}fluency_tools.js");
+          $this->config->scripts->add("{$moduleJsPath}fluency_processwire_module_config.js");
+        }
         break;
       default:
         // Everywhere else
@@ -422,9 +425,9 @@ class Fluency extends Process implements Module {
     return $output;
   }
 
-  ///////////////////////////
-  // API Endpoint Handling //
-  ///////////////////////////
+  ////////////////////////
+  // AJAX API Endpoints //
+  ////////////////////////
 
   // This is the interface that makes the module action methods available via AJAX
 
@@ -433,30 +436,26 @@ class Fluency extends Process implements Module {
    * The req GET parameter value determines what data will be returned and
    * is required for all AJAX requests to the module
    *
-   * @return string|null
+   * @return string    // JSON
    */
   public function ___executeData(): ?string {
     if (!$this->config->ajax) return null;
 
     $postData = $this->input->post;
+    $httpStatus = "200 OK";
     $returnData = [];
 
     switch ($postData->req) {
       case 'getBootData':
         $returnData = (object) [
-          'data' => $this->getClientBootData(),
-          'httpStatus' => 200
+          'data' => $this->getClientBootData()
         ];
         break;
       case 'translate':
         $returnData = $this->translate(
           urldecode($postData->sourceLanguage),
           urldecode($postData->content),
-          urldecode($postData->targetLanguage),
-          [
-            'ignoredStrings' => $postData->ignoredStrings ?? [],
-            'addParams' => $postData->addParams ?? []
-          ],
+          urldecode($postData->targetLanguage)
         );
         break;
       case 'usage':
@@ -476,6 +475,8 @@ class Fluency extends Process implements Module {
         // Localize the module
         break;
       case 'clearModuleLocalizations':
+        // Set this http status depending on success
+        $httpStatus = "204 No Content";
         return true;
         // clear localizations
         break;
@@ -483,6 +484,7 @@ class Fluency extends Process implements Module {
         return [1020, 1100];
         break;
       default:
+        $httpStatus = "400 Bad Request";
         $returnData = (object) [
           'data' => null,
           'httpStatus' => 400,
@@ -492,6 +494,7 @@ class Fluency extends Process implements Module {
     }
 
     header('Content-Type: application/json');
+    http_response_code($httpStatus);
     header($this->deepL->getHttpMessage($returnData->httpStatus));
 
     return json_encode($returnData);
@@ -502,7 +505,7 @@ class Fluency extends Process implements Module {
   ////////////////
 
   /**
-   * Handles admin page execution
+   * Admin translation tool page
    *
    * @return string
    */
