@@ -574,10 +574,9 @@ Fluency.PageNameFields = (function() {
 
 // Initialize all modules when the DOM is ready
 window.addEventListener('load', function(e) {
-  Fluency.AdminUi.init()
+  var bootData = ProcessWire.config.fluencyTranslation.bootData
 
-  Fluency.Tools.moduleRequest({req: 'getBootData'}, function(err, bootData) {
-    Fluency.MultilanguageFields.init(bootData)
-    Fluency.PageNameFields.init(bootData)
-  })
+  Fluency.AdminUi.init()
+  Fluency.MultilanguageFields.init(bootData)
+  Fluency.PageNameFields.init(bootData)
 })
