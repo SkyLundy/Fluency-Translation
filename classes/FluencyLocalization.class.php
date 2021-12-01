@@ -27,7 +27,7 @@ class FluencyLocalization {
    * Holds source directory path
    * @var string
    */
-  private $sourceDir;
+  private $definitionsDir;
 
   /**
    * Holds an instance of Fluency
@@ -68,7 +68,7 @@ class FluencyLocalization {
 
     // Paths
     $this->localizationDir = "{$fluencyDir}localization";
-    $this->sourceDir = "{$this->localizationDir}/source";
+    $this->definitionsDir = "{$this->localizationDir}/definitions";
     $this->cacheDir = "{$this->localizationDir}/cache";
 
     // Language Data
@@ -88,11 +88,11 @@ class FluencyLocalization {
    * @return object           k/v translation associations
    */
   public function get(string $context): object {
-    $userLanguage = wire('user')->language->id;
+    $userLanguageId = wire('user')->language->id;
 
-    // If the user language is the default, get the default language
+    $cachedStrings = $this->getFromCache($userLanguageId, $context);
 
-    return (object) [];
+    return (object) $cachedStrings;
   }
 
   /**
@@ -103,22 +103,26 @@ class FluencyLocalization {
    *
    * @return array Array of language IDs that were successfully translated and cached
    */
-  public function localizeModule(): object {
+  public function localizeModule() {
     $errors = [];
     $result = null;
 
+    // Translate definition files (create English language base files to translate from)
+    $this->createTranslationSource();
+
+    // Translate source language
+    $sourceLanguageIsoCode = $this->sourceLanguage->translator->language;
+    $sourceLanguageProcessWireId = $this->sourceLanguage->processWire->id;
+
+    $this->localizeForLanguage($sourceLanguageIsoCode, $sourceLanguageProcessWireId);
+
+    // Translate target languages
     foreach ($this->targetLanguages as $language) {
       $languageIsoCode = $language->translator->language;
       $processWireId = $language->processWire->id;
 
       $this->localizeForLanguage($languageIsoCode, $processWireId);
     }
-
-header('Content-Type: application/json');
-    echo json_encode($configuredLanguages); die;
-
-
-    var_dump($errors); die;
   }
 
   /**
@@ -134,6 +138,27 @@ header('Content-Type: application/json');
   /////////////////////////
 
   /**
+   * Creates a "base" localization file completed in English that can be translated from.
+   * Caches as base_{file name}.json
+   * @return void
+   */
+  private function createTranslationSource(): void {
+    foreach (array_keys($this->fileContexts) as $context) {
+      $file = "{$this->definitionsDir}/{$this->fileContexts[$context]}";
+
+      // Get file contents
+      $fileContents = file_get_contents($file);
+      $sourceStrings = (array) json_decode($fileContents);
+
+      $baseStrings = array_map(function($string) {
+        return str_replace('%{DEFAULT_LANGUAGE}', $this->sourceLanguage->translator->name, $string);
+      }, $sourceStrings);
+
+      $this->writeToCache('base', $context, $baseStrings);
+    }
+  }
+
+  /**
    * Localizes Fluency for a specified langauge
    * @param  string $targetLanguage ISO code for langauge to translate to
    * @return bool                   Success/fail
@@ -141,8 +166,8 @@ header('Content-Type: application/json');
   private function localizeForLanguage(string $languageIsoCode, $processWireId): bool {
 
     foreach (array_keys($this->fileContexts) as $context) {
-      $defaultStringData = $this->getDefaultStrings($context);
-      $translatedStrings = $this->translateStrings($defaultStringData, $languageIsoCode);
+      $baseStrings = $this->getBaseStrings($context);
+      $translatedStrings = $this->translateStrings($baseStrings, $languageIsoCode);
       $cacheResult = $this->writeToCache($processWireId, $context, $translatedStrings);
     }
 
@@ -154,19 +179,16 @@ header('Content-Type: application/json');
    * @param  string $context Language context for file association
    * @return object
    */
-  private function getDefaultStrings(string $context): array {
-    $file = "{$this->sourceDir}/{$this->fileContexts[$context]}";
+  private function getBaseStrings(string $context): ?array {
+    $file = "{$this->cacheDir}/base_{$this->fileContexts[$context]}";
+    $baseStrings = null;
 
-    // Get file contents
-    $fileContents = file_get_contents($file);
-    $defaultStrings = (array) json_decode($fileContents);
+    if (file_exists($file)) {
+      $fileContents = file_get_contents($file);
+      $baseStrings = (array) json_decode($fileContents);
+    }
 
-    // Replace any instances of %{DEFAULT_LANGUAGE} placeholder with name of source langauge
-    array_walk($defaultStrings, function(&$v, $k) {
-      $v = str_replace('%{DEFAULT_LANGUAGE}', $this->sourceLanguage->translator->name, $v);
-    });
-
-    return $defaultStrings;
+    return $baseStrings;
   }
 
   /**
@@ -182,7 +204,7 @@ header('Content-Type: application/json');
 
     // Translate array of strings
     $translationResult = $this->fluencyModule->translate(
-      $this->sourceLanguage->translator->language,
+      'EN',
       $stringVals,
       $targetLanguageIso
     );
@@ -208,18 +230,39 @@ header('Content-Type: application/json');
     $filename = "{$this->cacheDir}/{$langId}_{$this->fileContexts[$context]}";
     $content = json_encode($translatedText);
 
-    wire('files')->filePutContents($filename, $content);
-
+    file_put_contents($filename, $content);
   }
 
   /**
    * This gets translated text from cache
-   * @param  string $pwlangId ProcessWire Language ID
-   * @param  string $context      Language context for file association
-   * @return object               Object if file exists, null if it doesn't
+   * @param  string|int $pwlangId ProcessWire Language ID
+   * @param  string     $context  Language context for file association
+   * @return array
    */
-  private function getFromCache(string $langId, $context): ?object {
+  private function getFromCache($langId, string $context): array {
+    $langId = (string) $langId;
+    $filename = "{$this->cacheDir}/{$langId}_{$this->fileContexts[$context]}";
+    $fileExists = file_exists($filename);
+    $cachedStringData = null;
 
+    //If the localized file exists for the ID and context requested, get it
+    if ($fileExists) {
+      $fileContents = file_get_contents($filename);
+      $cachedStringData = json_decode($fileContents);
+    }
+
+    // If the file doesn't exist then get the base files
+    if (!$fileExists) {
+      $cachedStringData = $this->getBaseStrings($context);
+    }
+
+    // If the base files don't exist, create them and then get them.
+    if (!$fileContents) {
+      $this->createTranslationSource();
+      $cachedStringData = $this->getBaseStrings($context);
+    }
+
+    return (array) $cachedStringData;
   }
 
   /**
@@ -243,7 +286,7 @@ header('Content-Type: application/json');
 
       $idsCleared[] = explode('_', $fileName)[0];
 
-      $files->unlink($cachedFile, false, true);
+      unlink($cachedFile, false, true);
     }
 
     return array_unique($idsCleared);

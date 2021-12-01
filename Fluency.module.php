@@ -249,7 +249,6 @@ class Fluency extends Process implements Module {
       'languages' => $this->getConfiguredLanguageData(),
       'ui' => (object) [
         'text' => $this->fluencyLocalization->get('pageEditor')
-        // 'text' => $this->getLocalizations()->clientRendered
       ]
     ];
   }
@@ -516,7 +515,6 @@ class Fluency extends Process implements Module {
   public function ___execute(): string {
     $moduleConfig = $this->modules->getModuleConfigData('Fluency');
     $translationToolUiText = $this->fluencyLocalization->get('translationTool');
-    // $translationToolUiText = $this->getLocalizations()->translationTool;
 
     //////////////////////
     // Create page form //
