@@ -44,9 +44,9 @@ Fluency.LanguageTranslatorPage = (function() {
    * @return {void}
    */
   var init = function(bootData) {
-    sourceLanguage = bootData.data.languages.source
-    targetLanguages = bootData.data.languages.target
-    uiText = bootData.data.ui.text
+    sourceLanguage = bootData.languages.source
+    targetLanguages = bootData.languages.target
+    uiText = bootData.ui.text
     targetLanguage= _getTargetLanguage()
 
     var inputfields = document.getElementById('pw-content-body')
@@ -192,7 +192,5 @@ Fluency.LanguageTranslatorPage = (function() {
 
 
 window.addEventListener('load', function(e) {
-  Fluency.Tools.moduleRequest({req: 'getBootData'}, function(err, bootData) {
-    Fluency.LanguageTranslatorPage.init(bootData)
-  })
+  Fluency.LanguageTranslatorPage.init(ProcessWire.config.fluencyTranslation.bootData)
 })

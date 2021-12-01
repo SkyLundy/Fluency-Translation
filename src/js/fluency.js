@@ -7,7 +7,7 @@ var Fluency = Fluency || {}
  * This handles any non field/translation UI manipulations
   * @return {object} Public methods
  */
-Fluency.AdminUi = (function() {
+Fluency.AdminMenuItem = (function() {
 
   /**
    * Initializes module
@@ -93,10 +93,10 @@ Fluency.MultilanguageFields = (function() {
     multilangInputfieldContainers = document.querySelectorAll('.langTabs .LanguageSupport')
 
     // Set module-wide language boot data vars
-    sourceLanguage = bootData.data.languages.source
-    targetLanguages = bootData.data.languages.target
-    // translateTriggerText = bootData.data.translateTriggerText
-    uiText = bootData.data.ui.text
+    sourceLanguage = bootData.languages.source
+    targetLanguages = bootData.languages.target
+    // translateTriggerText = bootData.translateTriggerText
+    uiText = bootData.ui.text
 
     if (!_moduleShouldInit()) return false
 
@@ -131,11 +131,11 @@ Fluency.MultilanguageFields = (function() {
    * @return {bool}
    */
   var _shouldInitContainer = function(inputfieldContainer) {
-    var noTriggerPresent = !inputfieldContainer.hasAttribute('data-fluency-initialized'),
+    var uninitialized = !inputfieldContainer.hasAttribute('data-fluency-initialized'),
         hasInputfields = inputfieldContainer.querySelectorAll('input, iframe, textarea').length,
         notUiButton = !inputfieldContainer.querySelectorAll('.ui-button').length
 
-    return noTriggerPresent && hasInputfields && notUiButton
+    return uninitialized && hasInputfields && notUiButton
   }
 
   /**
@@ -421,9 +421,9 @@ Fluency.PageNameFields = (function() {
 
     pageNameFields = pageNameFieldsContainer.querySelectorAll('.LanguageSupport')
 
-    sourceLanguage = bootData.data.languages.source
-    targetLanguages = bootData.data.languages.target
-    uiText = bootData.data.ui.text
+    sourceLanguage = bootData.languages.source
+    targetLanguages = bootData.languages.target
+    uiText = bootData.ui.text
 
     _addTranslateTriggers(pageNameFields)
     _addActivityOverlays(pageNameFields)
@@ -572,11 +572,15 @@ Fluency.PageNameFields = (function() {
   }
 }())
 
+
+
+
+
 // Initialize all modules when the DOM is ready
 window.addEventListener('load', function(e) {
   var bootData = ProcessWire.config.fluencyTranslation.bootData
 
-  Fluency.AdminUi.init()
+  Fluency.AdminMenuItem.init()
   Fluency.MultilanguageFields.init(bootData)
   Fluency.PageNameFields.init(bootData)
 })

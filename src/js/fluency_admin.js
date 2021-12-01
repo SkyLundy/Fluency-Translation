@@ -251,6 +251,8 @@ Fluency.Admin = (function() {
   }
 }())
 
-window.onload = function() {
-  Fluency.Admin.init()
-}
+
+
+
+
+window.addEventListener('load', Fluency.Admin.init)

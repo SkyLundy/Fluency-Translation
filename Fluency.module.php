@@ -71,13 +71,6 @@ class Fluency extends Process implements Module {
       return false;
     }
 
-    // Pass boot data to JS
-    $this->config->js('fluencyTranslation', [
-      'bootData' => [
-        'data' => $this->getClientBootData()
-      ]
-    ]);
-
     // CSS/JS assets
     $this->insertAssets();
   }
@@ -120,21 +113,30 @@ class Fluency extends Process implements Module {
         break;
       case 'language-translator':
         // On the static text translation pages
+        $this->loadJsBootData();
         $this->config->scripts->add("{$moduleJsPath}fluency_language_translator_page.js");
         break;
       case 'module':
         // Check URL to see that we are in the Fluency module config
         if ($this->input->get->name === 'Fluency') {
           $this->config->styles->add("{$moduleCssPath}fluency_processwire_module_config.css");
-          $this->config->scripts->add("{$moduleJsPath}fluency_tools.js");
           $this->config->scripts->add("{$moduleJsPath}fluency_processwire_module_config.js");
         }
         break;
       default:
         // Everywhere else
+        $this->loadJsBootData();
         $this->config->scripts->add("{$moduleJsPath}fluency.js");
         break;
     }
+  }
+
+  /**
+   * Loads Fluency boot data in ProcessWire.config.fluencyTranslation.bootData
+   * @return void
+   */
+  private function loadJsBootData(): void {
+    $this->config->js('fluencyTranslation', ['bootData' => $this->getClientBootData()]);
   }
 
   /**

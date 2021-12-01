@@ -128,6 +128,8 @@ Fluency.Tools = (function() {
     var overlay = document.createElement('div')
         overlay.setAttribute('class', 'fluency-activity-overlay')
 
+    overlay.setAttribute('data-gradient-1', 'rgba(62, 185, 152, .85)')
+
     messages[messageType].forEach(function(message) {
       var overlayText = document.createElement('span')
           overlayText.setAttribute('class', 'fluency-overlay-animation-item')

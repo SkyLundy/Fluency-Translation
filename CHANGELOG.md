@@ -2,19 +2,20 @@
 
 ## 0.4
 ### *Breaking Changes, Critical Update* Features added, Bugfixes, enhancements
-- IMPORTANT: This update requires that you re-associate the PW->DeepL languages
+- **IMPORTANT: This update requires that you re-associate the PW->DeepL languages
   in the module config due to a change in how the module stores DeepL data. This
   was done to allow for future per-language configurations. No content  will be
-  lost or altered.
+  lost or altered.**
 - Module now specifies PHP 7.0 as minimum version.
 - Module now specifies ProcessLanguage, LanguageSupport, and LanguageTabs as module
   dependencies
-- Updated README.md with more clarification, better examples, and documentation
-  for new features below.
+- Admin UI boot data is no longer fetched via AJAX on page load. Boot data is now added to JS at
+  runtime using `$config->js()` when needed.
+- Updated README.md with more clarification, better documentation
 - New method that returns the current language ISO string, see README.md
-- New method that creates `<meta>` tag markup for alternate langauge URLs,
+- New method that creates `<link>` tag markup for alternate langauge URLs,
   see README.md
-- New method that creates markup for a <select> element with all ProcessWire
+- New method that creates markup for a `<select>` element with all ProcessWire
   configured languages. Can optionally be rendered with inline JS that navigates
   to the current page in the new selected language. See README.md
 - Module config layout updated. Now better suited for creating per-language
@@ -38,7 +39,6 @@
   `ignoredStrings`.
 - `Fluency::translate()` now matches the DeepL translate method in it's parameters. Please see
   README.md for details
-- Added more developer friendly documentation in README.md
 - Added method return examples from API with .json encoded examples
 
 ## 0.3.2 2021-07-03
