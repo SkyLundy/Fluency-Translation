@@ -52,20 +52,14 @@ class Fluency extends Process implements Module {
    * @return void
    */
   public function ready() {
-    // Work with this?
-    $this->config->js('fluencyTranslation', [
-      'test' => 'fired'
-    ]);
-
     $this->fluencyTools = new FluencyTools;
 
-    $deepL = new DeepL([
+    $this->deepL = new DeepL([
       'apiKey' => $this->deepl_api_key,
       'accountType' => $this->deepl_account_type
     ]);
 
-    $this->deepL = $deepL;
-    $this->fluencyLocalization = new FluencyLocalization($deepL);
+    $this->fluencyLocalization = new FluencyLocalization;
 
     if (!$this->moduleShouldInit()) {
       return false;
@@ -142,14 +136,10 @@ class Fluency extends Process implements Module {
   /**
    * Gets all language data for every language installed in ProcessWire and their
    * DeepL associations. Organized by a source array and a target array
-   * Note: This is intended for use as an AJAX return value for UI build use.
-   *       It does not return a list of the languages that DeepL allows to translate
-   *       from. The source here is the default language which is used to translate
-   *       from as configured.
    *
    * @return object Each langauge with associated data
    */
-  private function getConfiguredLanguageData(): object {
+  public function getConfiguredLanguageData(): object {
     $languageData = [];
 
     // Iterate through all languages and package for front end consumption
@@ -485,10 +475,10 @@ class Fluency extends Process implements Module {
         $returnData = $this->altLanguageMetaTags();
         break;
       case 'localizeModule':
-        return [1020, 1100];
-        // Localize the module
+        $returnData = $this->fluencyLocalization->localizeModule();
+        $httpStatus = "200 OK";
         break;
-      case 'clearLocalizationCache':
+      case 'clearModuleLocalization':
         $returnData = $this->fluencyLocalization->clearLocalizations();
         $httpStatus = "204 No Content";
         return true;

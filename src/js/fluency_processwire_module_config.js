@@ -33,16 +33,14 @@ Fluency.ProcessWireModuleConfig = (function() {
   var _bindTranslateTrigger = function() {
     document.querySelector('.js-fluency-translate-module').addEventListener('click', function(e) {
       e.preventDefault()
-      alert('fired translate trigger')
+      Fluency.Tools.moduleRequest({req: 'localizeModule'})
     })
   }
 
   var _bindClearCacheTrigger = function() {
     document.querySelector('.js-fluency-clear-module-cache').addEventListener('click', function(e) {
       e.preventDefault()
-      Fluency.Tools.moduleRequest({req: 'clearLocalizationCache'})
-      // alert(ProcessWire.config.fluencyTranslation.test)
-      // alert('fired clear cache trigger')
+      Fluency.Tools.moduleRequest({req: 'clearModuleLocalization'})
     })
   }
 

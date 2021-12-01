@@ -402,11 +402,11 @@ class FluencyConfig extends ModuleConfig {
     $content .= '<p>' . __('When languages have been configured, click Localize Module to have Fluency translate and cache all client UI text. When changes to languages have been made, such as adding or removing languages, click Clear Localization Cache and then Localize Module to re-generate the localized strings. Clearning the localization cache will destroy all cached texts and all UI elements will default to English.') . '<p>';
 
     // Add processing overlay element
-    $content .= '<div class="fluency-activity-overlay active"> ' .
-                  '<span class="message processing">' . __('Working...') . '</span>' .
-                  '<span class="message success">' . __('Module Localization Complete') . '</span>' .
-                  '<span class="message error">' . __('There was an error localizing Fluency') . '</span>' .
-                '</div>';
+    // $content .= '<div class="fluency-activity-overlay active"> ' .
+    //               '<span class="message processing">' . __('Working...') . '</span>' .
+    //               '<span class="message success">' . __('Module localization complete') . '</span>' .
+    //               '<span class="message error">' . __('There was an error localizing Fluency') . '</span>' .
+    //             '</div>';
 
     // Create field for content
     $field = $this->modules->get('InputfieldMarkup');

@@ -1,0 +1,182 @@
+{
+    "source":
+    {
+        "processWire":
+        {
+            "id": 1010,
+            "name": "default",
+            "title": "English"
+        },
+        "translator":
+        {
+            "language": "EN",
+            "name": "English"
+        }
+    },
+    "target": [
+    {
+        "processWire":
+        {
+            "id": 1012,
+            "name": "de",
+            "title": "German",
+            "urlValid": true
+        },
+        "translator":
+        {
+            "language": "DE",
+            "name": "German",
+            "supports_formality": true
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1020,
+            "name": "fr",
+            "title": "French",
+            "urlValid": true
+        },
+        "translator":
+        {
+            "language": "FR",
+            "name": "French",
+            "supports_formality": true
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1021,
+            "name": "es",
+            "title": "Spanish",
+            "urlValid": true
+        },
+        "translator":
+        {
+            "language": "ES",
+            "name": "Spanish",
+            "supports_formality": true
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1023,
+            "name": "nl",
+            "title": "Dutch",
+            "urlValid": true
+        },
+        "translator":
+        {
+            "language": "NL",
+            "name": "Dutch",
+            "supports_formality": true
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1024,
+            "name": "it",
+            "title": "Italian",
+            "urlValid": true
+        },
+        "translator":
+        {
+            "language": "IT",
+            "name": "Italian",
+            "supports_formality": true
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1025,
+            "name": "pl",
+            "title": "Polish",
+            "urlValid": true
+        },
+        "translator":
+        {
+            "language": "PL",
+            "name": "Polish",
+            "supports_formality": true
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1026,
+            "name": "ru",
+            "title": "Russian",
+            "urlValid": false
+        },
+        "translator":
+        {
+            "language": "RU",
+            "name": "Russian",
+            "supports_formality": true
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1027,
+            "name": "ja",
+            "title": "Japanese",
+            "urlValid": false
+        },
+        "translator":
+        {
+            "language": "JA",
+            "name": "Japanese",
+            "supports_formality": false
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1028,
+            "name": "zh",
+            "title": "Chinese",
+            "urlValid": false
+        },
+        "translator":
+        {
+            "language": "ZH",
+            "name": "Chinese",
+            "supports_formality": false
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1063,
+            "name": "en-gb",
+            "title": "English (UK)",
+            "urlValid": true
+        },
+        "translator":
+        {
+            "language": "EN-GB",
+            "name": "English (British)",
+            "supports_formality": false
+        }
+    },
+    {
+        "processWire":
+        {
+            "id": 1065,
+            "name": "pt-pt",
+            "title": "European Portuguese",
+            "urlValid": true
+        },
+        "translator":
+        {
+            "language": "PT-PT",
+            "name": "Portuguese (European)",
+            "supports_formality": true
+        }
+    }]
+}
