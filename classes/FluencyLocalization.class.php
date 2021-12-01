@@ -67,7 +67,7 @@ class FluencyLocalization {
    * @return bool True on success, false on fail
    */
   public function clearLocalizations(): bool {
-
+    $this->clearCachedTranslations();
   }
 
   /////////////////////////
@@ -105,9 +105,16 @@ class FluencyLocalization {
 
   /**
    * Clears all cached localization files
-   * @return array Array of ProcessWire language IDs that were cleared
+   * @param  string $languageId Optional ProcessWire ID for language to clear. Default clears all
+   * @return array              Array of ProcessWire language IDs that were cleared
    */
-  private function clearCache(): array {
+  private function clearCachedTranslations(string $languageId = null): array {
+    $cachedFiles = wire('files')->find($this->cacheDir);
 
+
+
+    $rescan = wire('files')->find($this->cacheDir);
+header('Content-Type: application/json');
+    echo json_encode($cachedFiles); die;
   }
 }

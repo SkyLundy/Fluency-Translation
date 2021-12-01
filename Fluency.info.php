@@ -11,6 +11,9 @@ $info = [
   'autoload' => true,
   'singular' => true,
   'requires' => [
+    'ProcessLanguage',
+    'LanguageSupport',
+    'LanguageTabs',
     'ProcessWire>=300',
     'PHP>=7.0'
   ],

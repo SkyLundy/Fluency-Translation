@@ -12,6 +12,16 @@ var Fluency = Fluency || {}
 Fluency.ProcessWireModuleConfig = (function() {
 
   /**
+   * These classes visually change the appearance of ProcessWire button
+   * states. The button must still have it's disabled attribute set
+   * @type {Object}
+   */
+  var uiButtonClass = {
+    enabled: 'ui-state-default',
+    disabled: 'ui-state-disabled',
+  }
+
+  /**
    * Initializes module
    * @return {void}
    */
@@ -30,7 +40,9 @@ Fluency.ProcessWireModuleConfig = (function() {
   var _bindClearCacheTrigger = function() {
     document.querySelector('.js-fluency-clear-module-cache').addEventListener('click', function(e) {
       e.preventDefault()
-      alert('fired clear cache trigger')
+      Fluency.Tools.moduleRequest({req: 'clearLocalizationCache'})
+      // alert(ProcessWire.config.fluencyTranslation.test)
+      // alert('fired clear cache trigger')
     })
   }
 

@@ -7,6 +7,8 @@
   was done to allow for future per-language configurations. No content  will be
   lost or altered.
 - Module now specifies PHP 7.0 as minimum version.
+- Module now specifies ProcessLanguage, LanguageSupport, and LanguageTabs as module
+  dependencies
 - Updated README.md with more clarification, better examples, and documentation
   for new features below.
 - New method that returns the current language ISO string, see README.md

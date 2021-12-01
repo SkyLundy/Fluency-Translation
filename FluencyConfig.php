@@ -393,20 +393,29 @@ class FluencyConfig extends ModuleConfig {
 
     // ===== Create fieldset
     $fieldset = $this->modules->get('InputfieldFieldset');
-    $fieldset->name = 'fieldset_language_associations';
+    $fieldset->addClass('fluency-localization');
+    $fieldset->name = 'fieldset_module_localization';
     $fieldset->label = __('Module Localization & Self Translation');
 
-    $content = '<p>' . __('Fluency has the ability to translate itself. This means that all text that the user sees when editing pages is automatically translated into all languages configured with Fluency.') . '<p>';
+    $content = '<p>' . __('Fluency has the ability to translate itself. This localizes UI strings for translation elements when editing pages, error messages, and the translation tool.') . '<p>';
+
+    $content .= '<p>' . __('When languages have been configured, click Localize Module to have Fluency translate and cache all client UI text. When changes to languages have been made, such as adding or removing languages, click Clear Localization Cache and then Localize Module to re-generate the localized strings. Clearning the localization cache will destroy all cached texts and all UI elements will default to English.') . '<p>';
+
+    // Add processing overlay element
+    $content .= '<div class="fluency-activity-overlay active"> ' .
+                  '<span class="message processing">' . __('Working...') . '</span>' .
+                  '<span class="message success">' . __('Module Localization Complete') . '</span>' .
+                  '<span class="message error">' . __('There was an error localizing Fluency') . '</span>' .
+                '</div>';
 
     // Create field for content
     $field = $this->modules->get('InputfieldMarkup');
     $field->collapsed = Inputfield::collapsedNever;
-    $field->skipLabel = Inputfield::skipLabelHeader;
     $field->themeBorder = 'hide';
     $field->value = $content;
     $fieldset->add($field);
 
-    // Add buttons
+    // Localize Module button
     $button = $this->modules->get('InputfieldSubmit');
     $button->addClass('fluency-localization-translate-module-button');
     $button->addClass('fluency-localization-button');
@@ -415,7 +424,7 @@ class FluencyConfig extends ModuleConfig {
     $button->attr('icon','language');
     $fieldset->add($button);
 
-
+    // Clear Localization Cache button
     $button = $this->modules->get('InputfieldSubmit');
     $button->addClass('fluency-localization-clear-module-cache-button');
     $button->addClass('fluency-localization-button');
@@ -430,8 +439,6 @@ class FluencyConfig extends ModuleConfig {
     ////////////////
     // Beg-a-Thon //
     ////////////////
-    // $moduleBaseUrl = wire('config')->urls->get($this->modules->get('Fluency'));
-
     $content = '<h3>' . __("Want to brighten someone's day?") . '</h3>';
 
     $content .= '<p>' . __("Did you or your client find this module useful? Do you have cash just lying around? Did you sneak in a few extra bucks in your client contract to pass along to the module builders you love? Whatever the case, if you want to throw a tip my way, give that button a click! It will probably go towards bourbon.") . '</p>';
@@ -440,6 +447,7 @@ class FluencyConfig extends ModuleConfig {
 
     // Create field for content
     $field = $this->modules->get('InputfieldMarkup');
+    $fieldset->name = 'fieldset_donation';
     $field->label = __('Beg-A-Thon');
     $field->value = $content;
     $inputfields->add($field);

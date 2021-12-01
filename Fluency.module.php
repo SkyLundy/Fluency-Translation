@@ -52,6 +52,11 @@ class Fluency extends Process implements Module {
    * @return void
    */
   public function ready() {
+    // Work with this?
+    $this->config->js('fluencyTranslation', [
+      'test' => 'fired'
+    ]);
+
     $this->fluencyTools = new FluencyTools;
 
     $deepL = new DeepL([
@@ -81,7 +86,7 @@ class Fluency extends Process implements Module {
 
     return $this->page->name !== 'login' &&
            $this->deepl_api_key &&
-           wire('user')->hasPermission('fluency-translate') &&
+           $this->user->hasPermission('fluency-translate') &&
            (isset($moduleConfig['api_key_valid']) && $moduleConfig['api_key_valid'] === true) &&
            (isset($moduleConfig['deepl_account_type']));
   }
@@ -392,7 +397,7 @@ class Fluency extends Process implements Module {
    * @return string
    */
   public function renderLanguageSelectElement(array $opts = []): string {
-    $currentLanguage = wire('user')->language;
+    $currentLanguage = $this->user->language;
     $selectElTemplate = $this->fluencyTools->getTemplate('language_select_tag.tpl.html');
     $optionElTemplate = $this->fluencyTools->getTemplate('language_select_option_tag.tpl.html');
     $optionElJs = $this->fluencyTools->getTemplate('language_select_inline_js.tpl.html');
@@ -406,7 +411,7 @@ class Fluency extends Process implements Module {
       }
 
       $optionEls[] = strtr($optionElTemplate, [
-        '%{URL}' => wire('page')->localUrl($language),
+        '%{URL}' => $this->page->localUrl($language),
         '%{SELECTED}' => $currentLanguage->id === $language->id ? ' selected' : '',
         '%{LANGUAGE_NAME}' => $language->title
       ]);
@@ -474,8 +479,8 @@ class Fluency extends Process implements Module {
         return [1020, 1100];
         // Localize the module
         break;
-      case 'clearModuleLocalizations':
-        // Set this http status depending on success
+      case 'clearLocalizationCache':
+        $returnData = $this->fluencyLocalization->clearLocalizations();
         $httpStatus = "204 No Content";
         return true;
         // clear localizations
