@@ -71,6 +71,13 @@ class Fluency extends Process implements Module {
       return false;
     }
 
+    // Pass boot data to JS
+    $this->config->js('fluencyTranslation', [
+      'bootData' => [
+        'data' => $this->getClientBootData()
+      ]
+    ]);
+
     // CSS/JS assets
     $this->insertAssets();
   }
