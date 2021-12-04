@@ -53,13 +53,13 @@ class Fluency extends Process implements Module {
    */
   public function ready() {
     $this->fluencyTools = new FluencyTools;
+    $this->fluencyLocalization = new FluencyLocalization;
 
     $this->deepL = new DeepL([
       'apiKey' => $this->deepl_api_key,
       'accountType' => $this->deepl_account_type
     ]);
 
-    $this->fluencyLocalization = new FluencyLocalization;
 
     if (!$this->moduleShouldInit()) {
       return false;

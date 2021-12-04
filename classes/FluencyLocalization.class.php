@@ -251,13 +251,13 @@ class FluencyLocalization {
       $cachedStringData = json_decode($fileContents);
     }
 
-    // If the file doesn't exist then get the base files
+    // If the file doesn't exist then get the base strings
     if (!$fileExists) {
       $cachedStringData = $this->getBaseStrings($context);
     }
 
-    // If the base files don't exist, create them and then get them.
-    if (!$fileContents) {
+    // If the base strings don't exist, create them and then get them.
+    if (!$cachedStringData) {
       $this->createTranslationSource();
       $cachedStringData = $this->getBaseStrings($context);
     }
@@ -286,7 +286,7 @@ class FluencyLocalization {
 
       $idsCleared[] = explode('_', $fileName)[0];
 
-      unlink($cachedFile, false, true);
+      unlink($cachedFile);
     }
 
     return array_unique($idsCleared);

@@ -332,10 +332,11 @@ class FluencyConfig extends ModuleConfig {
         // Get information from languages configured in ProcessWire
         $pwLanguageName = $language->getLanguageValue($userLanguage, 'name');
         $pwLanguageTitle = $language->getLanguageValue($userLanguage, 'title');
-        // $langSelectFieldName =  "pw_language_{$language->id}";
+        $langSelectFieldName =  "pw_language_{$language->id}";
 
         // Create language select field
         $langSelectField = $this->modules->get('InputfieldSelect');
+        $langSelectField->name = $langSelectFieldName;
         $langSelectField->themeBorder = 'hide';
         $langSelectField->collapsed = Inputfield::collapsedNever;
 
@@ -343,7 +344,6 @@ class FluencyConfig extends ModuleConfig {
 
         // Create PW default language association
         if ($isDefaultLanguage) {
-          $langSelectField->name = "pw_language_default";
           $langSelectField->label = __('ProcessWire Default Language: ') . "{$pwLanguageTitle}";
           $langSelectField->description = __('Translations will be made from this language into associated languages below.');
           $langSelectField->notes = __('This language must be listed in the source languages above.');
@@ -367,7 +367,6 @@ class FluencyConfig extends ModuleConfig {
           $childFieldset->themeBorder = 'hide';
           $childFieldset->collapsed = Inputfield::collapsedNever;
 
-          $langSelectField->name = "pw_language_{$language->id}";
           $langSelectField->skipLabel = Inputfield::skipLabelHeader;
           $langSelectField->description = __("DeepL language to associate with ") . $pwLanguageTitle;
 
@@ -400,7 +399,7 @@ class FluencyConfig extends ModuleConfig {
 
     $content = '<p>' . __('Fluency has the ability to translate itself. This localizes UI strings for translation elements when editing pages, error messages, and the translation tool.') . '<p>';
 
-    $content .= '<p>' . __('When languages have been configured, click Localize Module to have Fluency translate and cache all client UI text. When changes to languages have been made, such as adding or removing languages, click Clear Localization Cache and then Localize Module to re-generate the localized strings. Clearing the localization cache will cause all UI elements will default to English.') . '<p>';
+    $content .= '<p>' . __('When languages have been configured, click Localize Fluency to have Fluency translate and cache all client UI text. When changes to languages have been made, such as adding or removing languages, click Clear Localization Cache and then Localize Fluency to re-generate the localized strings. Clearing the localization cache will cause all UI elements will default to English.') . '<p>';
 
     // Add processing overlay element
     // $content .= '<div class="fluency-activity-overlay active"> ' .
@@ -421,7 +420,7 @@ class FluencyConfig extends ModuleConfig {
     $button->addClass('fluency-localization-translate-module-button');
     $button->addClass('fluency-localization-button');
     $button->addClass('js-fluency-translate-module');
-    $button->text = 'Localize Module';
+    $button->text = 'Localize Fluency';
     $button->attr('icon','language');
     $fieldset->add($button);
 
