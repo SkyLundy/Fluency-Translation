@@ -1,3 +1,6 @@
+# This build is archived
+Please use the current ProcessWire module located [in this repository](https://github.com/SkyLundy/Fluency)
+
 # Fluency - Integrated DeepL Translation for ProcessWire
 Fluency is a module that brings DeepL's powerful AI deep learning translation engine to the ProcessWire CMF/CMS. With minimal configuration and effort, ProcessWire's native multi-language fields are enhanced with a button to translate the content entered under the default language to the language under the field's currently selected language.
 
